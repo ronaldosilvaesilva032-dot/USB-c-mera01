@@ -6,1085 +6,164 @@
   <meta name="theme-color" content="#08111f">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
   <title>USB Camera Studio</title>
-
   <style>
     :root {
-      --bg: #070a14;
-      --panel: #11182a;
-      --panel-2: #18233b;
-      --line: #293653;
-      --text: #f5f7ff;
-      --muted: #9aa7c1;
-      --brand: #5b8cff;
-      --brand-2: #8a6cff;
-      --green: #36d7a2;
-      --danger: #ff6d7a;
-      --warning: #ffca68;
-      --shadow: 0 20px 60px rgba(0,0,0,.34);
-    }
-
-    body.light {
-      --bg: #edf2fb;
-      --panel: #ffffff;
-      --panel-2: #e8eef9;
-      --line: #d4deee;
-      --text: #17243e;
-      --muted: #5d6c83;
-      --shadow: 0 16px 42px rgba(43,65,105,.14);
-      background: radial-gradient(circle at 78% -8%,rgba(106,139,235,.25) 0,transparent 32%),#edf2fb;
-    }
-
-    body.light::before {
-      opacity: .07;
-    }
-
-    body.light aside {
-      background: rgba(255,255,255,.82);
-      border-color: #d6e0ef;
-    }
-
-    body.light .card {
-      background: linear-gradient(145deg,#fff,#f5f8fd);
-      border-color: #d4deee;
-    }
-
-    body.light .hero {
-      background: linear-gradient(105deg,#dbe8ff,#e8e7ff 52%,#e7e2ff);
-      border-color: #c3d2ec;
-    }
-
-    body.light .hero p,
-    body.light .hero-stat small {
-      color: #53647f;
-    }
-
-    body.light .hero-stat,
-    body.light .metric,
-    body.light .feature {
-      background: rgba(255,255,255,.58);
-      border-color: #cfdaeb;
-    }
-
-    body.light .preview,
-    body.light video {
-      background: #dce7f5;
-    }
-
-    body.light input,
-    body.light select {
-      background: #f6f9fd;
-      border-color: #cbd7e9;
-      color: var(--text);
-    }
-
-    body.light .btn {
-      background: #e4ebf8;
-      border-color: #c6d4e9;
-      color: var(--text);
-    }
-
-    body.light .btn.primary {
-      color: #fff;
-      background: linear-gradient(135deg,#4a79e8,#735de0);
-    }
-
-    body.light .status {
-      background: #f7faff;
-      border-color: #cbd7e9;
-    }
-
-    body.light .side-note {
-      background: #f5f8fd;
-      border-color: #d2ddeb;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 78% -8%, rgba(74,93,190,.42) 0, transparent 32%),
-        radial-gradient(circle at 12% 85%, rgba(37,93,170,.18) 0, transparent 30%),
-        var(--bg);
-      font: 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      opacity: .13;
-      background-image:
-        linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);
-      background-size: 54px 54px;
-      mask-image: linear-gradient(to bottom,black,transparent 78%);
-    }
-
-    .splash-screen {
-      position: fixed;
-      inset: 0;
-      z-index: 20;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      background: #030303;
-      transition: opacity .45s ease, visibility .45s ease;
-    }
-
-    .splash-screen::before {
-      content: "";
-      position: absolute;
-      width: 420px;
-      height: 420px;
-      border-radius: 50%;
-      background: radial-gradient(circle,rgba(255,166,0,.12),transparent 68%);
-      filter: blur(8px);
-    }
-
-    .splash-screen.hide {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .splash-content {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      animation: splashUp .7s ease both;
-    }
-
-    .splash-logo {
-      display: grid;
-      place-items: center;
-      width: 124px;
-      height: 124px;
-      margin: 0 auto 22px;
-      border-radius: 34px;
-      color: #fff;
-      background: linear-gradient(145deg,#ffb51b 0%,#f49600 72%,#e77e00 100%);
-      box-shadow: 0 19px 48px rgba(245,145,0,.29), inset 0 1px 0 rgba(255,255,255,.2);
-    }
-
-    .splash-logo svg {
-      width: 78px;
-      height: 78px;
-      display: block;
-    }
-
-    .splash-content h2 {
-      margin: 0;
-      color: #fff;
-      font-size: 29px;
-      font-weight: 800;
-      letter-spacing: -.8px;
-    }
-
-    .splash-content p {
-      margin: 7px 0 20px;
-      color: #a7a7a7;
-      font-size: 12px;
-    }
-
-    .splash-progress {
-      width: 160px;
-      height: 3px;
-      margin: auto;
-      overflow: hidden;
-      border-radius: 9px;
-      background: #302512;
-    }
-
-    .splash-progress i {
-      display: block;
-      width: 46%;
-      height: 100%;
-      border-radius: 9px;
-      background: #ffac12;
-      animation: splashLoad 1.15s ease-in-out infinite;
-    }
-
-    @keyframes splashUp {
-      from {
-        opacity: 0;
-        transform: translateY(10px) scale(.97);
-      }
-
-      to {
-        opacity: 1;
-        transform: none;
-      }
-    }
-
-    @keyframes splashLoad {
-      0% {
-        transform: translateX(-120%);
-      }
-
-      100% {
-        transform: translateX(350%);
-      }
-    }
-
-    button,
-    input,
-    select {
-      font: inherit;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-      color: var(--text);
-    }
-
-    .app {
-      display: grid;
-      grid-template-columns: 232px 1fr;
-      min-height: 100vh;
-      position: relative;
-    }
-
-    aside {
-      padding: 25px 15px;
-      border-right: 1px solid rgba(101,125,185,.18);
-      background: rgba(7,10,20,.78);
-      backdrop-filter: blur(18px);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      padding: 0 10px 28px;
-    }
-
-    .brand-mark {
-      display: grid;
-      place-items: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 11px;
-      background: linear-gradient(145deg,#ffb51b,#ed8d00);
-      box-shadow: 0 8px 25px rgba(245,145,0,.25);
-      color: #fff;
-    }
-
-    .brand-mark svg {
-      width: 28px;
-      height: 28px;
-      display: block;
-    }
-
-    .brand strong {
-      font-size: 16px;
-      letter-spacing: .2px;
-    }
-
-    .brand small {
-      display: block;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    nav {
-      display: grid;
-      gap: 7px;
-    }
-
-    nav button {
-      text-align: left;
-      padding: 13px 14px;
-      border-radius: 9px;
-      background: transparent;
-      color: var(--muted);
-      border-left: 3px solid transparent;
-    }
-
-    nav button:hover,
-    nav button.active {
-      background: linear-gradient(90deg,rgba(91,140,255,.2),rgba(91,140,255,.03));
-      color: var(--text);
-      border-left-color: var(--brand);
-    }
-
-    .side-note {
-      margin: 30px 8px 0;
-      padding: 14px;
-      border: 1px solid rgba(91,140,255,.2);
-      border-radius: 10px;
-      color: var(--muted);
-      font-size: 12px;
-      background: rgba(17,24,42,.55);
-    }
-
-    .side-note strong {
-      color: var(--text);
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    main {
-      width: min(1480px, 100%);
-      padding: 30px clamp(18px, 4vw, 52px) 46px;
-      margin: auto;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 18px;
-      margin-bottom: 22px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(25px,3vw,36px);
-      letter-spacing: -1px;
-    }
-
-    .subtitle {
-      margin: 5px 0 0;
-      color: var(--muted);
-    }
-
-    .hero {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-      min-height: 178px;
-      margin: 0 0 22px;
-      padding: 28px 31px;
-      overflow: hidden;
-      border: 1px solid rgba(105,132,211,.28);
-      border-radius: 12px;
-      background: linear-gradient(
-        105deg,
-        rgba(29,47,91,.98),
-        rgba(27,38,78,.78) 50%,
-        rgba(55,53,125,.88)
-      );
-      box-shadow: var(--shadow);
-    }
-
-    .hero::after {
-      content: "◉";
-      position: absolute;
-      right: 9%;
-      top: -62px;
-      color: rgba(141,158,255,.12);
-      font-size: 270px;
-      font-weight: 900;
-      transform: rotate(-18deg);
-    }
-
-    .hero-copy {
-      position: relative;
-      z-index: 1;
-      max-width: 600px;
-    }
-
-    .eyebrow {
-      color: #a9c4ff;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .hero h2 {
-      margin: 7px 0 6px;
-      font-size: clamp(22px,3vw,32px);
-      letter-spacing: -.7px;
-    }
-
-    .hero p {
-      margin: 0;
-      color: #c1cbe2;
-      max-width: 510px;
-    }
-
-    .hero-actions {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      gap: 9px;
-      flex-wrap: wrap;
-    }
-
-    .hero-stats {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      gap: 10px;
-    }
-
-    .hero-stat {
-      min-width: 82px;
-      padding: 12px;
-      border: 1px solid rgba(196,210,255,.18);
-      border-radius: 9px;
-      background: rgba(7,10,22,.26);
-    }
-
-    .hero-stat strong {
-      display: block;
-      font-size: 18px;
-    }
-
-    .hero-stat small {
-      color: #b8c4df;
-      font-size: 10px;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 12px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      color: var(--muted);
-      background: rgba(14,28,48,.75);
-      font-size: 13px;
-    }
-
-    .secure-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 9px 12px;
-      border: 1px solid rgba(54,215,162,.3);
-      border-radius: 999px;
-      color: #8ce7ca;
-      background: rgba(54,215,162,.07);
-      font-size: 12px;
-    }
-
-    .dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: var(--danger);
-      box-shadow: 0 0 0 4px rgba(255,109,122,.1);
-    }
-
-    .dot.ok {
-      background: var(--green);
-      box-shadow: 0 0 0 4px rgba(54,215,162,.1);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: minmax(0,1.55fr) minmax(300px,.75fr);
-      gap: 18px;
-    }
-
-    .card {
-      background: linear-gradient(145deg,rgba(18,25,45,.96),rgba(12,17,31,.96));
-      border: 1px solid rgba(105,128,181,.22);
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-    }
-
-    .card-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 17px 19px;
-      border-bottom: 1px solid rgba(105,128,181,.18);
-    }
-
-    .card:hover {
-      border-color: rgba(91,140,255,.42);
-    }
-
-    .card-head h2 {
-      margin: 0;
-      font-size: 15px;
-    }
-
-    .card-head span {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .preview {
-      position: relative;
-      min-height: 390px;
-      overflow: hidden;
-      background: radial-gradient(circle at center,#162746,#050811 72%);
-      border-radius: 12px 12px 0 0;
-    }
-
-    video {
-      display: block;
-      width: 100%;
-      height: 390px;
-      object-fit: contain;
-      background: #050811;
-      transform-origin: center;
-    }
-
-    .empty {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      padding: 30px;
-      color: var(--muted);
-      pointer-events: none;
-    }
-
-    .empty .camera-icon {
-      font-size: 45px;
-      margin-bottom: 10px;
-    }
-
-    .overlay {
-      position: absolute;
-      left: 16px;
-      right: 16px;
-      top: 14px;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      color: #fff;
-      font-size: 12px;
-      text-shadow: 0 2px 7px #000;
-      pointer-events: none;
-    }
-
-    .overlay .right {
-      text-align: right;
-    }
-
-    .rec {
-      color: #ff7a84;
-      font-weight: 700;
-    }
-
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
-      padding: 15px 17px;
-      border-top: 1px solid var(--line);
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      padding: 10px 14px;
-      border-radius: 7px;
-      background: #1a2744;
-      color: var(--text);
-      border: 1px solid #324870;
-      transition: .18s;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.14);
-      box-shadow: 0 7px 20px rgba(62,106,202,.18);
-    }
-
-    .btn.primary {
-      background: linear-gradient(135deg,#4a79e8,#735de0);
-      border-color: transparent;
-    }
-
-    .btn.danger {
-      background: rgba(255,109,122,.13);
-      color: #ffabb3;
-      border-color: rgba(255,109,122,.35);
-    }
-
-    .btn.ghost {
-      background: transparent;
-      color: var(--muted);
-    }
-
-    .btn:disabled {
-      opacity: .42;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .side {
-      display: grid;
-      gap: 18px;
-      align-content: start;
-    }
-
-    .form {
-      padding: 18px;
-      display: grid;
-      gap: 14px;
-    }
-
-    label {
-      display: grid;
-      gap: 7px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    input,
-    select {
-      width: 100%;
-      padding: 10px 11px;
-      color: var(--text);
-      background: #0b1121;
-      border: 1px solid #2c3d60;
-      border-radius: 7px;
-      outline: none;
-    }
-
-    input:focus,
-    select:focus {
-      border-color: var(--brand);
-      box-shadow: 0 0 0 3px rgba(91,140,255,.12);
-    }
-
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .check {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      color: var(--text);
-      font-size: 13px;
-    }
-
-    .check input {
-      width: auto;
-      accent-color: var(--brand);
-    }
-
-    .switch {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 11px 12px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-    }
-
-    .switch small {
-      display: block;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .switch input {
-      width: auto;
-      accent-color: var(--brand);
-    }
-
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 9px;
-      padding: 0 18px 18px;
-    }
-
-    .metric {
-      padding: 12px;
-      border: 1px solid rgba(105,128,181,.22);
-      border-radius: 8px;
-      background: rgba(7,11,23,.48);
-    }
-
-    .metric small {
-      color: var(--muted);
-      display: block;
-      font-size: 11px;
-    }
-
-    .metric strong {
-      display: block;
-      margin-top: 3px;
-      font-size: 17px;
-    }
-
-    .wide {
-      grid-column: 1 / -1;
-    }
-
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 10px;
-      padding: 18px;
-    }
-
-    .feature {
-      padding: 16px;
-      border: 1px solid rgba(105,128,181,.22);
-      border-radius: 9px;
-      background: linear-gradient(145deg,rgba(24,36,64,.72),rgba(10,15,28,.72));
-      transition: .18s;
-    }
-
-    .feature:hover {
-      transform: translateY(-2px);
-      border-color: rgba(91,140,255,.5);
-    }
-
-    .feature b {
-      display: block;
-      margin-bottom: 4px;
-      font-size: 13px;
-    }
-
-    .feature p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .note {
-      margin: 0 18px 18px;
-      padding: 12px 13px;
-      color: #c7d7e9;
-      font-size: 12px;
-      border-left: 3px solid var(--warning);
-      background: rgba(255,202,104,.07);
-      border-radius: 6px;
-    }
-
-    .devices {
-      display: flex;
-      gap: 9px;
-      align-items: center;
-    }
-
-    .devices select {
-      min-width: 180px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .settings-grid {
-      display: grid;
-      grid-template-columns: repeat(2,minmax(0,1fr));
-      gap: 18px;
-    }
-
-    .setting-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 13px 0;
-      border-bottom: 1px solid rgba(105,128,181,.18);
-    }
-
-    .setting-row:last-child {
-      border-bottom: 0;
-    }
-
-    .setting-row strong {
-      display: block;
-      font-size: 13px;
-      color: var(--text);
-    }
-
-    .setting-row small {
-      display: block;
-      margin-top: 3px;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .setting-row select {
-      width: 170px;
-      flex: none;
-    }
-
-    .setting-row input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--brand);
-    }
-
-    .range-setting {
-      display: grid;
-      grid-template-columns: 1fr 82px;
-      gap: 10px;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(105,128,181,.18);
-    }
-
-    .range-setting:last-child {
-      border-bottom: 0;
-    }
-
-    .range-setting strong {
-      display: block;
-      font-size: 13px;
-    }
-
-    .range-setting small {
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--brand);
-    }
-
-    .range-value {
-      text-align: right;
-      color: var(--brand);
-      font-weight: 800;
-      font-size: 12px;
-    }
-
-    .security-list {
-      display: grid;
-      gap: 9px;
-      padding: 18px;
-    }
-
-    .security-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .security-item b {
-      color: var(--green);
-      font-size: 15px;
-    }
-
-    .toast {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      max-width: 350px;
-      padding: 13px 16px;
-      color: var(--text);
-      background: #183452;
-      border: 1px solid #3e628b;
-      border-radius: 11px;
-      box-shadow: var(--shadow);
-      opacity: 0;
-      transform: translateY(15px);
-      pointer-events: none;
-      transition: .25s;
-      z-index: 12;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .reduce-motion *,
-    .reduce-motion *::before,
-    .reduce-motion *::after {
-      animation-duration: .01ms !important;
-      animation-iteration-count: 1 !important;
-      scroll-behavior: auto !important;
-      transition-duration: .01ms !important;
-    }
-
-    .section {
-      display: none;
-    }
-
-    .section.active {
-      display: block;
-    }
-
-    @media (max-width: 980px) {
-      .app {
-        grid-template-columns: 1fr;
-      }
-
-      aside {
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
-        padding: 13px;
-      }
-
-      .brand {
-        padding: 0 5px 10px;
-      }
-
-      nav {
-        grid-template-columns: repeat(5,1fr);
-      }
-
-      nav button {
-        text-align: center;
-        font-size: 12px;
-        padding: 9px 5px;
-        border-left: 0;
-        border-bottom: 3px solid transparent;
-      }
-
-      nav button:hover,
-      nav button.active {
-        border-left-color: transparent;
-        border-bottom-color: var(--brand);
-      }
-
-      .side-note {
-        display: none;
-      }
-
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .feature-grid {
-        grid-template-columns: repeat(2,1fr);
-      }
-
-      .settings-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hero {
-        min-height: 165px;
-      }
-
-      .hero-stats {
-        display: none;
-      }
-    }
-
-    @media (max-width: 560px) {
-      header {
-        display: block;
-      }
-
-      .header-actions {
-        justify-content: flex-start;
-        margin-top: 15px;
-      }
-
-      .preview,
-      video {
-        min-height: 240px;
-        height: 240px;
-      }
-
-      .row,
-      .metrics {
-        grid-template-columns: 1fr;
-      }
-
-      nav {
-        grid-template-columns: repeat(2,1fr);
-      }
-
-      .feature-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hero {
-        display: block;
-        padding: 22px;
-      }
-
-      .hero-actions {
-        margin-top: 17px;
-      }
-    }
+      --bg: #070a14; --panel: #11182a; --panel-2: #18233b; --line: #293653;
+      --text: #f5f7ff; --muted: #9aa7c1; --brand: #5b8cff; --brand-2: #8a6cff;
+      --green: #36d7a2; --danger: #ff6d7a; --warning: #ffca68; --shadow: 0 20px 60px rgba(0,0,0,.34);
+    }
+    body.light { --bg:#edf2fb; --panel:#ffffff; --panel-2:#e8eef9; --line:#d4deee; --text:#17243e; --muted:#5d6c83; --shadow:0 16px 42px rgba(43,65,105,.14); background:radial-gradient(circle at 78% -8%,rgba(106,139,235,.25) 0,transparent 32%),#edf2fb; }
+    body.light::before { opacity:.07; }
+    body.light aside { background:rgba(255,255,255,.82); border-color:#d6e0ef; }
+    body.light .card { background:linear-gradient(145deg,#fff,#f5f8fd); border-color:#d4deee; }
+    body.light .hero { background:linear-gradient(105deg,#dbe8ff,#e8e7ff 52%,#e7e2ff); border-color:#c3d2ec; }
+    body.light .hero p, body.light .hero-stat small { color:#53647f; }
+    body.light .hero-stat, body.light .metric, body.light .feature { background:rgba(255,255,255,.58); border-color:#cfdaeb; }
+    body.light .preview, body.light video { background:#dce7f5; }
+    body.light input, body.light select { background:#f6f9fd; border-color:#cbd7e9; color:var(--text); }
+    body.light .btn { background:#e4ebf8; border-color:#c6d4e9; color:var(--text); }
+    body.light .btn.primary { color:#fff; background:linear-gradient(135deg,#4a79e8,#735de0); }
+    body.light .status { background:#f7faff; border-color:#cbd7e9; }
+    body.light .side-note { background:#f5f8fd; border-color:#d2ddeb; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; color: var(--text); background: radial-gradient(circle at 78% -8%, rgba(74,93,190,.42) 0, transparent 32%), radial-gradient(circle at 12% 85%, rgba(37,93,170,.18) 0, transparent 30%), var(--bg); font: 15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif; }
+    body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.13; background-image:linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px); background-size:54px 54px; mask-image:linear-gradient(to bottom,black,transparent 78%); }
+    .splash-screen { position:fixed; inset:0; z-index:20; display:grid; place-items:center; background:radial-gradient(circle at center,#1c2e62 0, #080b18 58%,#05070f 100%); transition:opacity .45s ease, visibility .45s ease; }
+    .splash-screen.hide { opacity:0; visibility:hidden; pointer-events:none; }
+    .splash-content { text-align:center; animation:splashUp .7s ease both; }
+    .splash-logo { display:grid; place-items:center; width:78px; height:78px; margin:0 auto 18px; border-radius:22px; background:linear-gradient(145deg,#ffb514,#f59b00); box-shadow:0 18px 45px rgba(245,145,0,.34), inset 0 1px 0 rgba(255,255,255,.2); }
+    .splash-logo svg { width:58px; height:58px; display:block; }
+    .usb-logo { overflow:visible; }
+    .brand-mark { overflow:hidden; }
+    .brand-mark svg { width:32px; height:32px; display:block; }
+    .splash-content h2 { margin:0; font-size:25px; letter-spacing:-.6px; }
+    .splash-content p { margin:5px 0 20px; color:#aebad6; font-size:12px; }
+    .splash-progress { width:160px; height:3px; margin:auto; overflow:hidden; border-radius:9px; background:#26365c; }
+    .splash-progress i { display:block; width:46%; height:100%; border-radius:9px; background:#77a1ff; animation:splashLoad 1.15s ease-in-out infinite; }
+    @keyframes splashUp { from { opacity:0; transform:translateY(10px) scale(.97); } to { opacity:1; transform:none; } }
+    @keyframes splashLoad { 0% { transform:translateX(-120%); } 100% { transform:translateX(350%); } }
+    button, input, select { font: inherit; }
+    button { border: 0; cursor: pointer; color: var(--text); }
+    .app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; position:relative; }
+    aside { padding: 25px 15px; border-right: 1px solid rgba(101,125,185,.18); background: rgba(7,10,20,.78); backdrop-filter: blur(18px); }
+    .brand { display:flex; align-items:center; gap: 11px; padding: 0 10px 28px; }
+    .brand-mark { display:grid; place-items:center; width:40px; height:40px; border-radius:11px; background:linear-gradient(145deg,#ffb514,#f59b00); box-shadow:0 8px 25px rgba(245,145,0,.3); }
+    .brand strong { font-size: 16px; letter-spacing: .2px; }
+    .brand small { display:block; color:var(--muted); font-size:11px; }
+    nav { display:grid; gap: 7px; }
+    nav button { text-align:left; padding: 13px 14px; border-radius: 9px; background: transparent; color: var(--muted); border-left:3px solid transparent; }
+    nav button:hover, nav button.active { background: linear-gradient(90deg,rgba(91,140,255,.2),rgba(91,140,255,.03)); color: var(--text); border-left-color:var(--brand); }
+    .side-note { margin: 30px 8px 0; padding: 14px; border: 1px solid rgba(91,140,255,.2); border-radius: 10px; color: var(--muted); font-size: 12px; background:rgba(17,24,42,.55); }
+    .side-note strong { color: var(--text); display:block; margin-bottom:5px; }
+    main { width: min(1480px, 100%); padding: 30px clamp(18px, 4vw, 52px) 46px; margin: auto; }
+    header { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; margin-bottom: 22px; }
+    h1 { margin:0; font-size: clamp(25px,3vw,36px); letter-spacing:-1px; }
+    .subtitle { margin:5px 0 0; color:var(--muted); }
+    .hero { position:relative; display:flex; align-items:center; justify-content:space-between; gap:24px; min-height:178px; margin:0 0 22px; padding:28px 31px; overflow:hidden; border:1px solid rgba(105,132,211,.28); border-radius:12px; background:linear-gradient(105deg,rgba(29,47,91,.98),rgba(27,38,78,.78) 50%,rgba(55,53,125,.88)); box-shadow:var(--shadow); }
+    .hero::after { content:"◉"; position:absolute; right:9%; top:-62px; color:rgba(141,158,255,.12); font-size:270px; font-weight:900; transform:rotate(-18deg); }
+    .hero-copy { position:relative; z-index:1; max-width:600px; }
+    .eyebrow { color:#a9c4ff; text-transform:uppercase; letter-spacing:2px; font-size:11px; font-weight:800; }
+    .hero h2 { margin:7px 0 6px; font-size:clamp(22px,3vw,32px); letter-spacing:-.7px; }
+    .hero p { margin:0; color:#c1cbe2; max-width:510px; }
+    .hero-actions { position:relative; z-index:1; display:flex; gap:9px; flex-wrap:wrap; }
+    .hero-stats { position:relative; z-index:1; display:flex; gap:10px; }
+    .hero-stat { min-width:82px; padding:12px; border:1px solid rgba(196,210,255,.18); border-radius:9px; background:rgba(7,10,22,.26); }
+    .hero-stat strong { display:block; font-size:18px; }
+    .hero-stat small { color:#b8c4df; font-size:10px; }
+    .header-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    .status { display:flex; align-items:center; gap:8px; padding:9px 12px; border:1px solid var(--line); border-radius:999px; color:var(--muted); background:rgba(14,28,48,.75); font-size:13px; }
+    .secure-badge { display:flex; align-items:center; gap:6px; padding:9px 12px; border:1px solid rgba(54,215,162,.3); border-radius:999px; color:#8ce7ca; background:rgba(54,215,162,.07); font-size:12px; }
+    .dot { width:9px; height:9px; border-radius:50%; background:var(--danger); box-shadow:0 0 0 4px rgba(255,109,122,.1); }
+    .dot.ok { background:var(--green); box-shadow:0 0 0 4px rgba(54,215,162,.1); }
+    .grid { display:grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, .75fr); gap: 18px; }
+    .card { background: linear-gradient(145deg, rgba(18,25,45,.96), rgba(12,17,31,.96)); border:1px solid rgba(105,128,181,.22); border-radius: 12px; box-shadow:var(--shadow); }
+    .card-head { display:flex; justify-content:space-between; align-items:center; gap:12px; padding: 17px 19px; border-bottom:1px solid rgba(105,128,181,.18); }
+    .card:hover { border-color:rgba(91,140,255,.42); }
+    .card-head h2 { margin:0; font-size:15px; }
+    .card-head span { color:var(--muted); font-size:12px; }
+    .preview { position:relative; min-height: 390px; overflow:hidden; background:radial-gradient(circle at center,#162746,#050811 72%); border-radius:12px 12px 0 0; }
+    video { display:block; width:100%; height:390px; object-fit:contain; background:#050811; transform-origin:center; }
+    .empty { position:absolute; inset:0; display:grid; place-items:center; text-align:center; padding:30px; color:var(--muted); pointer-events:none; }
+    .empty .camera-icon { font-size:45px; margin-bottom:10px; }
+    .overlay { position:absolute; left:16px; right:16px; top:14px; display:flex; justify-content:space-between; gap:12px; color:#fff; font-size:12px; text-shadow: 0 2px 7px #000; pointer-events:none; }
+    .overlay .right { text-align:right; }
+    .rec { color:#ff7a84; font-weight:700; }
+    .toolbar { display:flex; flex-wrap:wrap; gap:9px; padding:15px 17px; border-top:1px solid var(--line); }
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:10px 14px; border-radius:7px; background:#1a2744; color:var(--text); border:1px solid #324870; transition:.18s; }
+    .btn:hover { transform:translateY(-1px); filter:brightness(1.14); box-shadow:0 7px 20px rgba(62,106,202,.18); }
+    .btn.primary { background:linear-gradient(135deg,#4a79e8,#735de0); border-color:transparent; }
+    .btn.danger { background:rgba(255,109,122,.13); color:#ffabb3; border-color:rgba(255,109,122,.35); }
+    .btn.ghost { background:transparent; color:var(--muted); }
+    .btn:disabled { opacity:.42; cursor:not-allowed; transform:none; }
+    .side { display:grid; gap:18px; align-content:start; }
+    .form { padding: 18px; display:grid; gap:14px; }
+    label { display:grid; gap:7px; color:var(--muted); font-size:12px; }
+    input, select { width:100%; padding:10px 11px; color:var(--text); background:#0b1121; border:1px solid #2c3d60; border-radius:7px; outline:none; }
+    input:focus, select:focus { border-color:var(--brand); box-shadow:0 0 0 3px rgba(91,140,255,.12); }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .check { display:flex; align-items:center; gap:9px; color:var(--text); font-size:13px; }
+    .check input { width:auto; accent-color:var(--brand); }
+    .switch { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 12px; border:1px solid var(--line); border-radius:10px; }
+    .switch small { display:block; color:var(--muted); margin-top:2px; }
+    .switch input { width:auto; accent-color:var(--brand); }
+    .metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; padding: 0 18px 18px; }
+    .metric { padding:12px; border:1px solid rgba(105,128,181,.22); border-radius:8px; background:rgba(7,11,23,.48); }
+    .metric small { color:var(--muted); display:block; font-size:11px; }
+    .metric strong { display:block; margin-top:3px; font-size:17px; }
+    .wide { grid-column:1 / -1; }
+    .feature-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:18px; }
+    .feature { padding:16px; border:1px solid rgba(105,128,181,.22); border-radius:9px; background:linear-gradient(145deg,rgba(24,36,64,.72),rgba(10,15,28,.72)); transition:.18s; }
+    .feature:hover { transform:translateY(-2px); border-color:rgba(91,140,255,.5); }
+    .feature b { display:block; margin-bottom:4px; font-size:13px; }
+    .feature p { margin:0; color:var(--muted); font-size:12px; }
+    .note { margin: 0 18px 18px; padding:12px 13px; color:#c7d7e9; font-size:12px; border-left:3px solid var(--warning); background:rgba(255,202,104,.07); border-radius:6px; }
+    .devices { display:flex; gap:9px; align-items:center; }
+    .devices select { min-width:180px; }
+    .hidden { display:none !important; }
+    .settings-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+    .setting-row { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:13px 0; border-bottom:1px solid rgba(105,128,181,.18); }
+    .setting-row:last-child { border-bottom:0; }
+    .setting-row strong { display:block; font-size:13px; color:var(--text); }
+    .setting-row small { display:block; margin-top:3px; color:var(--muted); font-size:11px; }
+    .setting-row select { width:170px; flex:none; }
+    .setting-row input[type="checkbox"] { width:18px; height:18px; accent-color:var(--brand); }
+    .range-setting { display:grid; grid-template-columns:1fr 82px; gap:10px; align-items:center; padding:12px 0; border-bottom:1px solid rgba(105,128,181,.18); }
+    .range-setting:last-child { border-bottom:0; }
+    .range-setting strong { display:block; font-size:13px; }
+    .range-setting small { color:var(--muted); font-size:11px; }
+    input[type="range"] { width:100%; accent-color:var(--brand); }
+    .range-value { text-align:right; color:var(--brand); font-weight:800; font-size:12px; }
+    .security-list { display:grid; gap:9px; padding:18px; }
+    .security-item { display:flex; align-items:center; gap:10px; color:var(--muted); font-size:12px; }
+    .security-item b { color:var(--green); font-size:15px; }
+    .toast { position:fixed; right:20px; bottom:20px; max-width:350px; padding:13px 16px; color:var(--text); background:#183452; border:1px solid #3e628b; border-radius:11px; box-shadow:var(--shadow); opacity:0; transform:translateY(15px); pointer-events:none; transition:.25s; z-index:12; }
+    .toast.show { opacity:1; transform:translateY(0); }
+    .reduce-motion *, .reduce-motion *::before, .reduce-motion *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; transition-duration:.01ms !important; }
+    .section { display:none; }
+    .section.active { display:block; }
+    @media (max-width: 980px) { .app { grid-template-columns:1fr; } aside { border-right:0; border-bottom:1px solid var(--line); padding:13px; } .brand { padding:0 5px 10px; } nav { grid-template-columns:repeat(5,1fr); } nav button { text-align:center; font-size:12px; padding:9px 5px; border-left:0; border-bottom:3px solid transparent; } nav button:hover, nav button.active { border-left-color:transparent; border-bottom-color:var(--brand); } .side-note { display:none; } .grid { grid-template-columns:1fr; } .feature-grid { grid-template-columns:repeat(2,1fr); } .settings-grid { grid-template-columns:1fr; } .hero { min-height:165px; } .hero-stats { display:none; } }
+    @media (max-width: 560px) { header { display:block; } .header-actions { justify-content:flex-start; margin-top:15px; } .preview, video { min-height:240px; height:240px; } .row, .metrics { grid-template-columns:1fr; } nav { grid-template-columns:repeat(2,1fr); } .feature-grid { grid-template-columns:1fr; } .hero { display:block; padding:22px; } .hero-actions { margin-top:17px; } }
   </style>
 </head>
-
 <body>
-  <div class="splash-screen" id="splashScreen">
-    <div class="splash-content">
-      <div class="splash-logo" aria-label="USB Camera">
-        <svg viewBox="0 0 96 96" aria-hidden="true">
-          <path d="M14 31h33l13-9h12c5 0 9 4 9 9v34c0 5-4 9-9 9H60L47 65H14c-3 0-5-2-5-5V36c0-3 2-5 5-5Z"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="6"
-                stroke-linejoin="round"/>
-          <path d="M47 38v20m0-20-8-8m8 8 8-8m-8 20-8 8m8-8 8 8M31 38v20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="6"
-                stroke-linecap="round"
-                stroke-linejoin="round"/>
-          <circle cx="31" cy="48" r="4" fill="currentColor"/>
-        </svg>
-      </div>
-
-      <h2>USB Camera</h2>
-      <p>Studio local para captura UVC</p>
-
-      <div class="splash-progress">
-        <i></i>
-      </div>
-    </div>
-  </div>
-
+  <div class="splash-screen" id="splashScreen"><div class="splash-content"><div class="splash-logo" aria-label="USB Camera"><svg class="usb-logo" viewBox="0 0 96 96" aria-hidden="true">
+          <rect x="22" y="33" width="39" height="31" rx="3" fill="#111"/>
+          <path d="M61 35 76 26v44l-15-9Z" fill="#111"/>
+          <g fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M40 57V39m0 0-5 5m5-5 5 5m-5 9h13m0 0-4-4m4 4-4 4m-20-4v9h11"/>
+          </g>
+          <circle cx="40" cy="39" r="1.8" fill="#fff"/>
+        </svg></div><h2>USB Camera Studio</h2><p>Preparando seu centro de captura</p><div class="splash-progress"><i></i></div></div></div>
   <div class="app">
     <aside>
-      <div class="brand">
-        <div class="brand-mark" aria-label="USB Camera">
-          <svg viewBox="0 0 96 96" aria-hidden="true">
-            <path d="M14 31h33l13-9h12c5 0 9 4 9 9v34c0 5-4 9-9 9H60L47 65H14c-3 0-5-2-5-5V36c0-3 2-5 5-5Z"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="6"
-                  stroke-linejoin="round"/>
-            <path d="M47 38v20m0-20-8-8m8 8 8-8m-8 20-8 8m8-8 8 8M31 38v20"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"/>
-            <circle cx="31" cy="48" r="4" fill="currentColor"/>
-          </svg>
-        </div>
-
-        <div>
-          <strong>USB Camera</strong>
-          <small>Studio local</small>
-        </div>
-      </div>
-
+      <div class="brand"><div class="brand-mark" aria-label="USB Camera"><svg class="usb-logo" viewBox="0 0 96 96" aria-hidden="true">
+          <rect x="22" y="33" width="39" height="31" rx="3" fill="#111"/>
+          <path d="M61 35 76 26v44l-15-9Z" fill="#111"/>
+          <g fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M40 57V39m0 0-5 5m5-5 5 5m-5 9h13m0 0-4-4m4 4-4 4m-20-4v9h11"/>
+          </g>
+          <circle cx="40" cy="39" r="1.8" fill="#fff"/>
+        </svg></div><div><strong>USB Camera</strong><small>Studio local</small></div></div>
       <nav aria-label="Navegação">
         <button class="active" data-section="dashboard">▦ Painel</button>
         <button data-section="stream">◉ Transmissão</button>
@@ -1092,2031 +171,186 @@
         <button data-section="about">ⓘ Compatibilidade</button>
         <button data-section="settings">⚙ Configurações</button>
       </nav>
-
-      <div class="side-note">
-        <strong>Protótipo web</strong>
-        Use uma webcam ou uma EasyCap reconhecida pelo navegador.
-        Recursos RTSP/RTMP precisam de um servidor de transmissão.
-      </div>
+      <div class="side-note"><strong>Protótipo web</strong>Use uma webcam ou uma EasyCap reconhecida pelo navegador. Recursos RTSP/RTMP precisam de um servidor de transmissão.</div>
     </aside>
 
     <main>
       <section id="dashboard" class="section active">
         <header>
-          <div>
-            <h1>Painel da câmera</h1>
-            <p class="subtitle">
-              Capture, grave e monitore seus dispositivos UVC.
-            </p>
-          </div>
-
-          <div class="header-actions">
-            <div class="secure-badge">🔒 Proteção ativa</div>
-
-            <div class="status">
-              <i class="dot" id="statusDot"></i>
-              <span id="statusText">Nenhum dispositivo conectado</span>
-            </div>
-
-            <button class="btn primary" id="connectBtn">
-              ⌁ Conectar dispositivo
-            </button>
-          </div>
+          <div><h1>Painel da câmera</h1><p class="subtitle">Capture, grave e monitore seus dispositivos UVC.</p></div>
+          <div class="header-actions"><div class="secure-badge">🔒 Proteção ativa</div><div class="status"><i class="dot" id="statusDot"></i><span id="statusText">Nenhum dispositivo conectado</span></div><button class="btn primary" id="connectBtn">⌁ Conectar dispositivo</button></div>
         </header>
 
         <div class="hero">
-          <div class="hero-copy">
-            <div class="eyebrow">USB CAMERA · STUDIO</div>
-            <h2>Seu centro de captura.</h2>
-
-            <p>
-              Conecte uma câmera UVC ou EasyCap, visualize em tempo real e grave
-              com controle profissional.
-            </p>
-
-            <div class="hero-actions">
-              <button class="btn primary" id="heroConnectBtn">
-                ⌁ Conectar agora
-              </button>
-
-              <button class="btn" data-section-jump="about">
-                Ver compatibilidade
-              </button>
-            </div>
-          </div>
-
-          <div class="hero-stats">
-            <div class="hero-stat">
-              <strong>4K</strong>
-              <small>captura compatível</small>
-            </div>
-
-            <div class="hero-stat">
-              <strong>UVC</strong>
-              <small>plug &amp; play</small>
-            </div>
-
-            <div class="hero-stat">
-              <strong>24/7</strong>
-              <small>gravação em loop</small>
-            </div>
-          </div>
+          <div class="hero-copy"><div class="eyebrow">USB CAMERA · STUDIO</div><h2>Seu centro de captura.</h2><p>Conecte uma câmera UVC ou EasyCap, visualize em tempo real e grave com controle profissional.</p><div class="hero-actions"><button class="btn primary" id="heroConnectBtn">⌁ Conectar agora</button><button class="btn" data-section-jump="about">Ver compatibilidade</button></div></div>
+          <div class="hero-stats"><div class="hero-stat"><strong>4K</strong><small>captura compatível</small></div><div class="hero-stat"><strong>UVC</strong><small>plug &amp; play</small></div><div class="hero-stat"><strong>24/7</strong><small>gravação em loop</small></div></div>
         </div>
 
         <div class="grid">
           <article class="card">
-            <div class="card-head">
-              <h2>Visualização</h2>
-
-              <div class="devices">
-                <select id="deviceSelect" aria-label="Escolha a câmera">
-                  <option value="">Conecte para listar dispositivos</option>
-                </select>
-
-                <button
-                  class="btn ghost"
-                  id="refreshBtn"
-                  title="Atualizar dispositivos">
-                  ↻
-                </button>
-              </div>
-            </div>
-
+            <div class="card-head"><h2>Visualização</h2><div class="devices"><select id="deviceSelect" aria-label="Escolha a câmera"><option value="">Conecte para listar dispositivos</option></select><button class="btn ghost" id="refreshBtn" title="Atualizar dispositivos">↻</button></div></div>
             <div class="preview">
               <video id="preview" autoplay muted playsinline></video>
-
-              <div class="empty" id="emptyState">
-                <div>
-                  <div class="camera-icon">▣</div>
-                  <strong>Nenhuma imagem disponível</strong>
-                  <br>
-                  <span>
-                    Conecte uma webcam UVC ou placa EasyCap via OTG.
-                  </span>
-                </div>
-              </div>
-
-              <div class="overlay">
-                <div id="overlayLeft">USB CAMERA</div>
-
-                <div class="right">
-                  <span id="recordIndicator"></span>
-                  <br>
-                  <span id="overlayInfo"></span>
-                </div>
-              </div>
+              <div class="empty" id="emptyState"><div><div class="camera-icon">▣</div><strong>Nenhuma imagem disponível</strong><br><span>Conecte uma webcam UVC ou placa EasyCap via OTG.</span></div></div>
+              <div class="overlay"><div id="overlayLeft">USB CAMERA</div><div class="right"><span id="recordIndicator"></span><br><span id="overlayInfo"></span></div></div>
             </div>
-
             <div class="toolbar">
-              <button class="btn primary" id="recordBtn" disabled>
-                ● Iniciar gravação
-              </button>
-
-              <button class="btn" id="shotBtn" disabled>
-                ▣ Capturar foto
-              </button>
-
-              <button class="btn" id="pipBtn" disabled>
-                ⌗ Picture-in-Picture
-              </button>
-
-              <button class="btn" id="fullBtn" disabled>
-                ⛶ Tela cheia
-              </button>
+              <button class="btn primary" id="recordBtn" disabled>● Iniciar gravação</button>
+              <button class="btn" id="shotBtn" disabled>▣ Capturar foto</button>
+              <button class="btn" id="pipBtn" disabled>⌗ Picture-in-Picture</button>
+              <button class="btn" id="fullBtn" disabled>⛶ Tela cheia</button>
             </div>
-
-            <div class="metrics">
-              <div class="metric">
-                <small>Estado</small>
-                <strong id="metricState">Parado</strong>
-              </div>
-
-              <div class="metric">
-                <small>Tempo gravado</small>
-                <strong id="timer">00:00:00</strong>
-              </div>
-
-              <div class="metric">
-                <small>Detecção</small>
-                <strong id="motionState">Desligada</strong>
-              </div>
-            </div>
+            <div class="metrics"><div class="metric"><small>Estado</small><strong id="metricState">Parado</strong></div><div class="metric"><small>Tempo gravado</small><strong id="timer">00:00:00</strong></div><div class="metric"><small>Detecção</small><strong id="motionState">Desligada</strong></div></div>
           </article>
 
           <div class="side">
-            <article class="card">
-              <div class="card-head">
-                <h2>Configuração rápida</h2>
-                <span>local</span>
-              </div>
+            <article class="card"><div class="card-head"><h2>Configuração rápida</h2><span>local</span></div><div class="form">
+              <label>Resolução preferida<select id="resolution"><option value="1920x1080">Full HD · 1920 × 1080</option><option value="1280x720">HD · 1280 × 720</option><option value="3840x2160">4K · 3840 × 2160</option><option value="640x480">SD · 640 × 480</option></select></label>
+              <label>Taxa de quadros<select id="frameRate"><option value="15">15 FPS · econômico</option><option value="24">24 FPS · cinema</option><option value="30" selected>30 FPS · padrão</option><option value="60">60 FPS · fluido</option></select></label>
+              <div class="row"><label>GPS / localização<input id="gpsText" placeholder="Ainda não obtido" readonly></label><label>Velocidade<input id="speed" type="number" min="0" step="0.1" value="0"><small>km/h</small></label></div>
+              <button class="btn" id="gpsBtn">⌖ Obter localização</button>
+              <label class="check"><input type="checkbox" id="timestamp" checked> Sobrepor data e hora</label>
+              <label class="check"><input type="checkbox" id="gpsOverlay"> Sobrepor GPS e velocidade</label>
+              <label class="check"><input type="checkbox" id="mirror"> Espelhar imagem</label>
+              <label class="switch"><span>Detecção de movimento<small>Inicia a gravação ao detectar mudança.</small></span><input type="checkbox" id="motion"></label>
+            </div></article>
 
-              <div class="form">
-                <label>
-                  Resolução preferida
-                  <select id="resolution">
-                    <option value="1920x1080">
-                      Full HD · 1920 × 1080
-                    </option>
-                    <option value="1280x720">
-                      HD · 1280 × 720
-                    </option>
-                    <option value="3840x2160">
-                      4K · 3840 × 2160
-                    </option>
-                    <option value="640x480">
-                      SD · 640 × 480
-                    </option>
-                  </select>
-                </label>
-
-                <label>
-                  Taxa de quadros
-                  <select id="frameRate">
-                    <option value="15">15 FPS · econômico</option>
-                    <option value="24">24 FPS · cinema</option>
-                    <option value="30" selected>30 FPS · padrão</option>
-                    <option value="60">60 FPS · fluido</option>
-                  </select>
-                </label>
-
-                <div class="row">
-                  <label>
-                    GPS / localização
-                    <input id="gpsText" placeholder="Ainda não obtido" readonly>
-                  </label>
-
-                  <label>
-                    Velocidade
-                    <input
-                      id="speed"
-                      type="number"
-                      min="0"
-                      step="0.1"
-                      value="0">
-                    <small>km/h</small>
-                  </label>
-                </div>
-
-                <button class="btn" id="gpsBtn">
-                  ⌖ Obter localização
-                </button>
-
-                <label class="check">
-                  <input type="checkbox" id="timestamp" checked>
-                  Sobrepor data e hora
-                </label>
-
-                <label class="check">
-                  <input type="checkbox" id="gpsOverlay">
-                  Sobrepor GPS e velocidade
-                </label>
-
-                <label class="check">
-                  <input type="checkbox" id="mirror">
-                  Espelhar imagem
-                </label>
-
-                <label class="switch">
-                  <span>
-                    Detecção de movimento
-                    <small>
-                      Inicia a gravação ao detectar mudança.
-                    </small>
-                  </span>
-
-                  <input type="checkbox" id="motion">
-                </label>
-              </div>
-            </article>
-
-            <article class="card">
-              <div class="card-head">
-                <h2>Armazenamento</h2>
-                <span>neste navegador</span>
-              </div>
-
-              <div class="form">
-                <label>
-                  Modo de gravação
-                  <select id="loopMode">
-                    <option value="normal">Normal</option>
-                    <option value="loop">
-                      Loop — manter somente o último segmento
-                    </option>
-                  </select>
-                </label>
-
-                <label>
-                  Tamanho do segmento
-                  <select id="segment">
-                    <option>1 minuto</option>
-                    <option>5 minutos</option>
-                    <option>10 minutos</option>
-                  </select>
-                </label>
-
-                <button class="btn" id="downloadBtn" disabled>
-                  ⇩ Baixar última gravação
-                </button>
-              </div>
-            </article>
+            <article class="card"><div class="card-head"><h2>Armazenamento</h2><span>neste navegador</span></div><div class="form"><label>Modo de gravação<select id="loopMode"><option value="normal">Normal</option><option value="loop">Loop — manter somente o último segmento</option></select></label><label>Tamanho do segmento<select id="segment"><option>1 minuto</option><option>5 minutos</option><option>10 minutos</option></select></label><button class="btn" id="downloadBtn" disabled>⇩ Baixar última gravação</button></div></article>
           </div>
 
-          <article class="card wide">
-            <div class="card-head">
-              <h2>Recursos incluídos</h2>
-              <span>baseado nas informações do aplicativo</span>
-            </div>
-
-            <div class="feature-grid">
-              <div class="feature">
-                <b>▣ UVC / EasyCap</b>
-                <p>
-                  Webcams, placas HDMI, endoscópios e capturadores compatíveis.
-                </p>
-              </div>
-
-              <div class="feature">
-                <b>◉ RTSP / HTTP</b>
-                <p>
-                  Visualização em rede quando conectado a um servidor compatível.
-                </p>
-              </div>
-
-              <div class="feature">
-                <b>● Loop e movimento</b>
-                <p>
-                  Gravação segmentada e acionada por detecção de movimento.
-                </p>
-              </div>
-
-              <div class="feature">
-                <b>⌁ RTMP / SRT</b>
-                <p>
-                  Transmissão ao vivo — requer configuração de servidor ou
-                  plataforma.
-                </p>
-              </div>
-            </div>
-
-            <p class="note">
-              Aviso: um arquivo HTML não instala drivers Android. O navegador só
-              acessa dispositivos que o sistema reconhece como câmera/microfone.
-              A compatibilidade da EasyCap depende do chipset e da alimentação
-              USB.
-            </p>
-          </article>
+          <article class="card wide"><div class="card-head"><h2>Recursos incluídos</h2><span>baseado nas informações do aplicativo</span></div><div class="feature-grid"><div class="feature"><b>▣ UVC / EasyCap</b><p>Webcams, placas HDMI, endoscópios e capturadores compatíveis.</p></div><div class="feature"><b>◉ RTSP / HTTP</b><p>Visualização em rede quando conectado a um servidor compatível.</p></div><div class="feature"><b>● Loop e movimento</b><p>Gravação segmentada e acionada por detecção de movimento.</p></div><div class="feature"><b>⌁ RTMP / SRT</b><p>Transmissão ao vivo — requer configuração de servidor ou plataforma.</p></div></div><p class="note">Aviso: um arquivo HTML não instala drivers Android. O navegador só acessa dispositivos que o sistema reconhece como câmera/microfone. A compatibilidade da EasyCap depende do chipset e da alimentação USB.</p></article>
         </div>
       </section>
 
-      <section id="stream" class="section">
-        <header>
-          <div>
-            <h1>Transmissão</h1>
-            <p class="subtitle">
-              Configure o destino do vídeo e áudio.
-            </p>
-          </div>
-        </header>
+      <section id="stream" class="section"><header><div><h1>Transmissão</h1><p class="subtitle">Configure o destino do vídeo e áudio.</p></div></header><div class="grid"><article class="card"><div class="card-head"><h2>Destino de transmissão</h2><span>configuração</span></div><div class="form"><label>Protocolo<select id="protocol"><option>RTMP / RTMPS</option><option>SRT</option><option>RTSP / RTSPS</option><option>HTTP / HTTPS</option></select></label><label>Endereço do servidor<input id="server" placeholder="Cole o endereço do seu servidor"></label><label>Chave de transmissão<input id="streamKey" type="password" placeholder="Chave ou token (não compartilhe)"></label><div class="row"><label>Codec<select><option>H.264</option><option>H.265 / HEVC</option><option>AV1</option></select></label><label>Taxa<select><option>4 Mbps</option><option>6 Mbps</option><option>8 Mbps</option><option>12 Mbps</option></select></label></div><button class="btn primary" id="streamBtn">◉ Iniciar transmissão</button></div><p class="note">A transmissão RTMP/RTSP não é enviada diretamente por este protótipo sem um backend ou servidor de mídia. Os campos acima servem para organizar a configuração.</p></article><article class="card"><div class="card-head"><h2>Checklist</h2></div><div class="form"><label class="check"><input type="checkbox"> Internet estável</label><label class="check"><input type="checkbox"> Servidor ou plataforma configurada</label><label class="check"><input type="checkbox"> Chave de transmissão protegida</label><label class="check"><input type="checkbox"> Codec suportado pelo celular</label><label class="check"><input type="checkbox"> Fonte USB externa, se necessário</label></div></article></div></section>
 
-        <div class="grid">
-          <article class="card">
-            <div class="card-head">
-              <h2>Destino de transmissão</h2>
-              <span>configuração</span>
-            </div>
+      <section id="recording" class="section"><header><div><h1>Gravação</h1><p class="subtitle">Controle o formato e os arquivos capturados.</p></div></header><div class="grid"><article class="card"><div class="card-head"><h2>Opções de gravação</h2></div><div class="form"><label>Formato preferido<select id="format"><option value="webm">WebM · compatível</option><option value="mp4">MP4 · se suportado</option></select></label><label>Qualidade de compressão<select id="quality"><option value="2000000">Econômica · 2 Mbps</option><option value="5000000" selected>Equilibrada · 5 Mbps</option><option value="10000000">Alta · 10 Mbps</option><option value="16000000">Muito alta · 16 Mbps</option></select></label><label>Nome do arquivo<input id="filename" value="usb-camera-gravacao"></label><label class="check"><input type="checkbox" checked> Incluir áudio</label><label class="check"><input type="checkbox" checked> Incluir sobreposição configurada</label><button class="btn primary" id="recordFromPage">● Gravar usando a câmera conectada</button></div></article><article class="card"><div class="card-head"><h2>Último arquivo</h2></div><div class="form"><p id="lastFile" style="color:var(--muted); margin:0">Nenhuma gravação disponível.</p><button class="btn" id="downloadBtn2" disabled>⇩ Baixar arquivo</button></div></article></div></section>
 
-            <div class="form">
-              <label>
-                Protocolo
-                <select id="protocol">
-                  <option>RTMP / RTMPS</option>
-                  <option>SRT</option>
-                  <option>RTSP / RTSPS</option>
-                  <option>HTTP / HTTPS</option>
-                </select>
-              </label>
-
-              <label>
-                Endereço do servidor
-                <input
-                  id="server"
-                  placeholder="Cole o endereço do seu servidor">
-              </label>
-
-              <label>
-                Chave de transmissão
-                <input
-                  id="streamKey"
-                  type="password"
-                  placeholder="Chave ou token (não compartilhe)">
-              </label>
-
-              <div class="row">
-                <label>
-                  Codec
-                  <select>
-                    <option>H.264</option>
-                    <option>H.265 / HEVC</option>
-                    <option>AV1</option>
-                  </select>
-                </label>
-
-                <label>
-                  Taxa
-                  <select>
-                    <option>4 Mbps</option>
-                    <option>6 Mbps</option>
-                    <option>8 Mbps</option>
-                    <option>12 Mbps</option>
-                  </select>
-                </label>
-              </div>
-
-              <button class="btn primary" id="streamBtn">
-                ◉ Iniciar transmissão
-              </button>
-            </div>
-
-            <p class="note">
-              A transmissão RTMP/RTSP não é enviada diretamente por este
-              protótipo sem um backend ou servidor de mídia. Os campos acima
-              servem para organizar a configuração.
-            </p>
-          </article>
-
-          <article class="card">
-            <div class="card-head">
-              <h2>Checklist</h2>
-            </div>
-
-            <div class="form">
-              <label class="check">
-                <input type="checkbox">
-                Internet estável
-              </label>
-
-              <label class="check">
-                <input type="checkbox">
-                Servidor ou plataforma configurada
-              </label>
-
-              <label class="check">
-                <input type="checkbox">
-                Chave de transmissão protegida
-              </label>
-
-              <label class="check">
-                <input type="checkbox">
-                Codec suportado pelo celular
-              </label>
-
-              <label class="check">
-                <input type="checkbox">
-                Fonte USB externa, se necessário
-              </label>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section id="recording" class="section">
-        <header>
-          <div>
-            <h1>Gravação</h1>
-            <p class="subtitle">
-              Controle o formato e os arquivos capturados.
-            </p>
-          </div>
-        </header>
-
-        <div class="grid">
-          <article class="card">
-            <div class="card-head">
-              <h2>Opções de gravação</h2>
-            </div>
-
-            <div class="form">
-              <label>
-                Formato preferido
-                <select id="format">
-                  <option value="webm">WebM · compatível</option>
-                  <option value="mp4">MP4 · se suportado</option>
-                </select>
-              </label>
-
-              <label>
-                Qualidade de compressão
-                <select id="quality">
-                  <option value="2000000">
-                    Econômica · 2 Mbps
-                  </option>
-                  <option value="5000000" selected>
-                    Equilibrada · 5 Mbps
-                  </option>
-                  <option value="10000000">
-                    Alta · 10 Mbps
-                  </option>
-                  <option value="16000000">
-                    Muito alta · 16 Mbps
-                  </option>
-                </select>
-              </label>
-
-              <label>
-                Nome do arquivo
-                <input id="filename" value="usb-camera-gravacao">
-              </label>
-
-              <label class="check">
-                <input type="checkbox" checked>
-                Incluir áudio
-              </label>
-
-              <label class="check">
-                <input type="checkbox" checked>
-                Incluir sobreposição configurada
-              </label>
-
-              <button class="btn primary" id="recordFromPage">
-                ● Gravar usando a câmera conectada
-              </button>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="card-head">
-              <h2>Último arquivo</h2>
-            </div>
-
-            <div class="form">
-              <p id="lastFile" style="color:var(--muted);margin:0">
-                Nenhuma gravação disponível.
-              </p>
-
-              <button class="btn" id="downloadBtn2" disabled>
-                ⇩ Baixar arquivo
-              </button>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section id="about" class="section">
-        <header>
-          <div>
-            <h1>Compatibilidade</h1>
-            <p class="subtitle">
-              O que verificar antes de conectar.
-            </p>
-          </div>
-        </header>
-
-        <div class="card">
-          <div class="feature-grid">
-            <div class="feature">
-              <b>1. OTG</b>
-              <p>
-                O Android precisa aceitar USB OTG e o cabo precisa transmitir
-                dados.
-              </p>
-            </div>
-
-            <div class="feature">
-              <b>2. Chipset</b>
-              <p>
-                EasyCap não é um único modelo. UTV, STK, EM e SMI podem se
-                comportar diferente.
-              </p>
-            </div>
-
-            <div class="feature">
-              <b>3. Energia</b>
-              <p>
-                Algumas placas exigem hub ou alimentação externa para não
-                desconectar.
-              </p>
-            </div>
-
-            <div class="feature">
-              <b>4. Resolução</b>
-              <p>
-                4K exige captura, cabo, USB e processador compatíveis; reduza
-                para 720p se falhar.
-              </p>
-            </div>
-          </div>
-
-          <p class="note">
-            No Android 9 ou superior, aplicativos desse tipo podem solicitar
-            permissão de câmera mesmo quando a fonte principal é uma câmera USB.
-            Isso acontece porque o sistema usa essa permissão para liberar o
-            acesso ao dispositivo de vídeo.
-          </p>
-        </div>
-      </section>
-
-      <section id="settings" class="section">
-        <header>
-          <div>
-            <h1>Configurações</h1>
-            <p class="subtitle">
-              Personalize a aparência e o comportamento do estúdio.
-            </p>
-          </div>
-        </header>
-
-        <div class="settings-grid">
-          <article class="card">
-            <div class="card-head">
-              <h2>Aparência</h2>
-              <span>interface</span>
-            </div>
-
-            <div class="form">
-              <div class="setting-row">
-                <div>
-                  <strong>Tema do aplicativo</strong>
-                  <small>Escolha como o painel deve aparecer.</small>
-                </div>
-
-                <select id="themeSelect">
-                  <option value="dark">Escuro</option>
-                  <option value="light">Claro</option>
-                  <option value="system">Sistema</option>
-                </select>
-              </div>
-
-              <div class="setting-row">
-                <div>
-                  <strong>Idioma</strong>
-                  <small>Idioma atual do painel.</small>
-                </div>
-
-                <select disabled>
-                  <option>Português (Brasil)</option>
-                </select>
-              </div>
-
-              <div class="setting-row">
-                <div>
-                  <strong>Animação de abertura</strong>
-                  <small>Mostrar a tela inicial ao abrir o app.</small>
-                </div>
-
-                <input type="checkbox" id="splashToggle" checked>
-              </div>
-
-              <div class="setting-row">
-                <div>
-                  <strong>Reduzir movimento</strong>
-                  <small>
-                    Desativa transições para maior conforto.
-                  </small>
-                </div>
-
-                <input type="checkbox" id="reduceMotion">
-              </div>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="card-head">
-              <h2>Captura padrão</h2>
-              <span>preferências</span>
-            </div>
-
-            <div class="form">
-              <div class="setting-row">
-                <div>
-                  <strong>Data e hora no vídeo</strong>
-                  <small>Usar sobreposição por padrão.</small>
-                </div>
-
-                <input type="checkbox" id="timestampDefault" checked>
-              </div>
-
-              <div class="setting-row">
-                <div>
-                  <strong>Áudio da câmera</strong>
-                  <small>Solicitar microfone ao conectar.</small>
-                </div>
-
-                <input type="checkbox" id="audioDefault" checked>
-              </div>
-
-              <div class="setting-row">
-                <div>
-                  <strong>Detecção de movimento</strong>
-                  <small>Deixar desligada por padrão.</small>
-                </div>
-
-                <input type="checkbox" id="motionDefault">
-              </div>
-
-              <div class="setting-row">
-                <div>
-                  <strong>Resolução inicial</strong>
-                  <small>Qualidade usada ao conectar.</small>
-                </div>
-
-                <select id="resolutionDefault">
-                  <option value="1920x1080">Full HD</option>
-                  <option value="1280x720">HD</option>
-                  <option value="3840x2160">4K</option>
-                  <option value="640x480">SD</option>
-                </select>
-              </div>
-
-              <div class="setting-row">
-                <div>
-                  <strong>Taxa de quadros padrão</strong>
-                  <small>Velocidade de captura ao conectar.</small>
-                </div>
-
-                <select id="frameRateDefault">
-                  <option value="15">15 FPS</option>
-                  <option value="24">24 FPS</option>
-                  <option value="30" selected>30 FPS</option>
-                  <option value="60">60 FPS</option>
-                </select>
-              </div>
-
-              <div class="setting-row">
-                <div>
-                  <strong>Formato de vídeo padrão</strong>
-                  <small>Formato usado nas gravações.</small>
-                </div>
-
-                <select id="formatDefault">
-                  <option value="webm">WebM</option>
-                  <option value="mp4">MP4</option>
-                </select>
-              </div>
-
-              <div class="setting-row">
-                <div>
-                  <strong>Qualidade de compressão</strong>
-                  <small>Bitrate padrão dos vídeos.</small>
-                </div>
-
-                <select id="qualityDefault">
-                  <option value="2000000">Econômica</option>
-                  <option value="5000000" selected>Equilibrada</option>
-                  <option value="10000000">Alta</option>
-                  <option value="16000000">Muito alta</option>
-                </select>
-              </div>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="card-head">
-              <h2>Ajustes de imagem</h2>
-              <span>filtros locais</span>
-            </div>
-
-            <div class="form">
-              <div class="range-setting">
-                <div>
-                  <strong>Brilho</strong>
-                  <small>Iluminação da visualização.</small>
-                </div>
-
-                <div>
-                  <input
-                    type="range"
-                    id="brightnessRange"
-                    min="50"
-                    max="150"
-                    value="100">
-                  <div class="range-value" id="brightnessValue">100%</div>
-                </div>
-              </div>
-
-              <div class="range-setting">
-                <div>
-                  <strong>Contraste</strong>
-                  <small>Definição entre áreas claras e escuras.</small>
-                </div>
-
-                <div>
-                  <input
-                    type="range"
-                    id="contrastRange"
-                    min="50"
-                    max="150"
-                    value="100">
-                  <div class="range-value" id="contrastValue">100%</div>
-                </div>
-              </div>
-
-              <div class="range-setting">
-                <div>
-                  <strong>Saturação</strong>
-                  <small>Intensidade das cores.</small>
-                </div>
-
-                <div>
-                  <input
-                    type="range"
-                    id="saturationRange"
-                    min="0"
-                    max="200"
-                    value="100">
-                  <div class="range-value" id="saturationValue">100%</div>
-                </div>
-              </div>
-
-              <div class="range-setting">
-                <div>
-                  <strong>Nitidez</strong>
-                  <small>Realce visual dos detalhes.</small>
-                </div>
-
-                <div>
-                  <input
-                    type="range"
-                    id="sharpnessRange"
-                    min="0"
-                    max="100"
-                    value="0">
-                  <div class="range-value" id="sharpnessValue">0%</div>
-                </div>
-              </div>
-
-              <div class="range-setting">
-                <div>
-                  <strong>Balanço de branco</strong>
-                  <small>Compensação de temperatura da imagem.</small>
-                </div>
-
-                <div>
-                  <input
-                    type="range"
-                    id="whiteBalanceRange"
-                    min="0"
-                    max="100"
-                    value="50">
-                  <div class="range-value" id="whiteBalanceValue">50%</div>
-                </div>
-              </div>
-
-              <div class="range-setting">
-                <div>
-                  <strong>Exposição</strong>
-                  <small>Quantidade geral de luz.</small>
-                </div>
-
-                <div>
-                  <input
-                    type="range"
-                    id="exposureRange"
-                    min="50"
-                    max="150"
-                    value="100">
-                  <div class="range-value" id="exposureValue">100%</div>
-                </div>
-              </div>
-
-              <div class="setting-row">
-                <div>
-                  <strong>Reduzir serrilhados</strong>
-                  <small>
-                    Suavização para imagens de jogos e fontes de baixa
-                    resolução.
-                  </small>
-                </div>
-
-                <input type="checkbox" id="antiAliasing">
-              </div>
-
-              <div class="setting-row">
-                <div>
-                  <strong>Intensidade da suavização</strong>
-                  <small>
-                    Suave para PS1; média ou forte para PS2 e PS3.
-                  </small>
-                </div>
-
-                <select id="antiAliasingLevel">
-                  <option value="0.25">Suave</option>
-                  <option value="0.5" selected>Média</option>
-                  <option value="0.8">Forte</option>
-                </select>
-              </div>
-
-              <p class="note" style="margin:12px 0 0">
-                Esses ajustes são filtros de software aplicados à visualização
-                em tempo real.
-              </p>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="card-head">
-              <h2>Privacidade</h2>
-              <span>local</span>
-            </div>
-
-            <div class="security-list">
-              <div class="security-item">
-                <b>✓</b>
-                <span>Nenhum e-mail é solicitado ou armazenado.</span>
-              </div>
-
-              <div class="security-item">
-                <b>✓</b>
-                <span>Nenhum dado de perfil é coletado.</span>
-              </div>
-
-              <div class="security-item">
-                <b>✓</b>
-                <span>Não há PIN ou senha de acesso nesta versão.</span>
-              </div>
-
-              <div class="security-item">
-                <b>✓</b>
-                <span>Preferências ficam somente neste dispositivo.</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="card-head">
-              <h2>Pasta de gravação</h2>
-              <span>armazenamento</span>
-            </div>
-
-            <div class="form">
-              <p id="folderStatus" style="color:var(--muted);margin:0">
-                As gravações serão baixadas pelo navegador.
-              </p>
-
-              <button class="btn primary" id="chooseFolder">
-                ▣ Escolher pasta
-              </button>
-
-              <button class="btn ghost" id="clearFolder">
-                Limpar pasta escolhida
-              </button>
-
-              <label class="check">
-                <input type="checkbox" id="dateFolders">
-                Criar subpastas por data
-              </label>
-
-              <small style="color:var(--muted)">
-                O Android pedirá autorização somente para a pasta que você
-                selecionar.
-              </small>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="card-head">
-              <h2>Sobre o aplicativo</h2>
-              <span>versão 2.1</span>
-            </div>
-
-            <div class="form">
-              <p style="color:var(--muted);margin:0">
-                USB Camera Studio para Android. Conecte dispositivos UVC, grave
-                vídeos e organize suas transmissões em um painel moderno.
-              </p>
-
-              <button class="btn" id="resetSettings">
-                ↺ Restaurar configurações
-              </button>
-            </div>
-          </article>
-        </div>
-      </section>
+      <section id="about" class="section"><header><div><h1>Compatibilidade</h1><p class="subtitle">O que verificar antes de conectar.</p></div></header><div class="card"><div class="feature-grid"><div class="feature"><b>1. OTG</b><p>O Android precisa aceitar USB OTG e o cabo precisa transmitir dados.</p></div><div class="feature"><b>2. Chipset</b><p>EasyCap não é um único modelo. UTV, STK, EM e SMI podem se comportar diferente.</p></div><div class="feature"><b>3. Energia</b><p>Algumas placas exigem hub ou alimentação externa para não desconectar.</p></div><div class="feature"><b>4. Resolução</b><p>4K exige captura, cabo, USB e processador compatíveis; reduza para 720p se falhar.</p></div></div><p class="note">No Android 9 ou superior, aplicativos desse tipo podem solicitar permissão de câmera mesmo quando a fonte principal é uma câmera USB. Isso acontece porque o sistema usa essa permissão para liberar o acesso ao dispositivo de vídeo.</p></div></section>
+      <section id="settings" class="section"><header><div><h1>Configurações</h1><p class="subtitle">Personalize a aparência e o comportamento do estúdio.</p></div></header><div class="settings-grid"><article class="card"><div class="card-head"><h2>Aparência</h2><span>interface</span></div><div class="form"><div class="setting-row"><div><strong>Tema do aplicativo</strong><small>Escolha como o painel deve aparecer.</small></div><select id="themeSelect"><option value="dark">Escuro</option><option value="light">Claro</option><option value="system">Sistema</option></select></div><div class="setting-row"><div><strong>Idioma</strong><small>Idioma atual do painel.</small></div><select disabled><option>Português (Brasil)</option></select></div><div class="setting-row"><div><strong>Animação de abertura</strong><small>Mostrar a tela inicial ao abrir o app.</small></div><input type="checkbox" id="splashToggle" checked></div><div class="setting-row"><div><strong>Reduzir movimento</strong><small>Desativa transições para maior conforto.</small></div><input type="checkbox" id="reduceMotion"></div></div></article><article class="card"><div class="card-head"><h2>Captura padrão</h2><span>preferências</span></div><div class="form"><div class="setting-row"><div><strong>Data e hora no vídeo</strong><small>Usar sobreposição por padrão.</small></div><input type="checkbox" id="timestampDefault" checked></div><div class="setting-row"><div><strong>Áudio da câmera</strong><small>Solicitar microfone ao conectar.</small></div><input type="checkbox" id="audioDefault" checked></div><div class="setting-row"><div><strong>Detecção de movimento</strong><small>Deixar desligada por padrão.</small></div><input type="checkbox" id="motionDefault"></div><div class="setting-row"><div><strong>Resolução inicial</strong><small>Qualidade usada ao conectar.</small></div><select id="resolutionDefault"><option value="1920x1080">Full HD</option><option value="1280x720">HD</option><option value="3840x2160">4K</option><option value="640x480">SD</option></select></div><div class="setting-row"><div><strong>Taxa de quadros padrão</strong><small>Velocidade de captura ao conectar.</small></div><select id="frameRateDefault"><option value="15">15 FPS</option><option value="24">24 FPS</option><option value="30" selected>30 FPS</option><option value="60">60 FPS</option></select></div><div class="setting-row"><div><strong>Formato de vídeo padrão</strong><small>Formato usado nas gravações.</small></div><select id="formatDefault"><option value="webm">WebM</option><option value="mp4">MP4</option></select></div><div class="setting-row"><div><strong>Qualidade de compressão</strong><small>Bitrate padrão dos vídeos.</small></div><select id="qualityDefault"><option value="2000000">Econômica</option><option value="5000000" selected>Equilibrada</option><option value="10000000">Alta</option><option value="16000000">Muito alta</option></select></div></div></article><article class="card"><div class="card-head"><h2>Ajustes de imagem</h2><span>filtros locais</span></div><div class="form"><div class="range-setting"><div><strong>Brilho</strong><small>Iluminação da visualização.</small></div><div><input type="range" id="brightnessRange" min="50" max="150" value="100"><div class="range-value" id="brightnessValue">100%</div></div></div><div class="range-setting"><div><strong>Contraste</strong><small>Definição entre áreas claras e escuras.</small></div><div><input type="range" id="contrastRange" min="50" max="150" value="100"><div class="range-value" id="contrastValue">100%</div></div></div><div class="range-setting"><div><strong>Saturação</strong><small>Intensidade das cores.</small></div><div><input type="range" id="saturationRange" min="0" max="200" value="100"><div class="range-value" id="saturationValue">100%</div></div></div><div class="range-setting"><div><strong>Nitidez</strong><small>Realce visual dos detalhes.</small></div><div><input type="range" id="sharpnessRange" min="0" max="100" value="0"><div class="range-value" id="sharpnessValue">0%</div></div></div><div class="range-setting"><div><strong>Balanço de branco</strong><small>Compensação de temperatura da imagem.</small></div><div><input type="range" id="whiteBalanceRange" min="0" max="100" value="50"><div class="range-value" id="whiteBalanceValue">50%</div></div></div><div class="range-setting"><div><strong>Exposição</strong><small>Quantidade geral de luz.</small></div><div><input type="range" id="exposureRange" min="50" max="150" value="100"><div class="range-value" id="exposureValue">100%</div></div></div><div class="setting-row"><div><strong>Reduzir serrilhados</strong><small>Suavização para imagens de jogos e fontes de baixa resolução.</small></div><input type="checkbox" id="antiAliasing"></div><div class="setting-row"><div><strong>Intensidade da suavização</strong><small>Suave para PS1; média ou forte para PS2 e PS3.</small></div><select id="antiAliasingLevel"><option value="0.25">Suave</option><option value="0.5" selected>Média</option><option value="0.8">Forte</option></select></div><p class="note" style="margin:12px 0 0">Esses ajustes são filtros de software aplicados à visualização em tempo real.</p></div></article><article class="card"><div class="card-head"><h2>Privacidade</h2><span>local</span></div><div class="security-list"><div class="security-item"><b>✓</b><span>Nenhum e-mail é solicitado ou armazenado.</span></div><div class="security-item"><b>✓</b><span>Nenhum dado de perfil é coletado.</span></div><div class="security-item"><b>✓</b><span>Não há PIN ou senha de acesso nesta versão.</span></div><div class="security-item"><b>✓</b><span>Preferências ficam somente neste dispositivo.</span></div></div></article><article class="card"><div class="card-head"><h2>Pasta de gravação</h2><span>armazenamento</span></div><div class="form"><p id="folderStatus" style="color:var(--muted);margin:0">As gravações serão baixadas pelo navegador.</p><button class="btn primary" id="chooseFolder">▣ Escolher pasta</button><button class="btn ghost" id="clearFolder">Limpar pasta escolhida</button><label class="check"><input type="checkbox" id="dateFolders"> Criar subpastas por data</label><small style="color:var(--muted)">O Android pedirá autorização somente para a pasta que você selecionar.</small></div></article><article class="card"><div class="card-head"><h2>Sobre o aplicativo</h2><span>versão 2.1</span></div><div class="form"><p style="color:var(--muted);margin:0">USB Camera Studio para Android. Conecte dispositivos UVC, grave vídeos e organize suas transmissões em um painel moderno.</p><button class="btn" id="resetSettings">↺ Restaurar configurações</button></div></article></div></section>
     </main>
   </div>
-
   <div class="toast" id="toast"></div>
 
   <script>
     const $ = (s) => document.querySelector(s);
+    let stream = null, recorder = null, chunks = [], lastBlob = null, lastMime = 'video/webm', lastExtension = 'webm', browserDirectory = null, timerInterval = null, startedAt = 0, motionTimer = null, previousFrame = null;
+    const video = $('#preview'), canvas = document.createElement('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
 
-    let stream = null;
-    let recorder = null;
-    let chunks = [];
-    let lastBlob = null;
-    let lastMime = 'video/webm';
-    let lastExtension = 'webm';
-    let browserDirectory = null;
-    let timerInterval = null;
-    let startedAt = 0;
-    let motionTimer = null;
-    let previousFrame = null;
-
-    const video = $('#preview');
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d', {
-      willReadFrequently: true
-    });
-
-    function toast(message) {
-      const el = $('#toast');
-
-      el.textContent = message;
-      el.classList.add('show');
-
-      clearTimeout(toast.t);
-
-      toast.t = setTimeout(() => {
-        el.classList.remove('show');
-      }, 3600);
-    }
-
-    function setConnected(connected) {
-      $('#statusDot').classList.toggle('ok', connected);
-
-      $('#statusText').textContent = connected
-        ? 'Dispositivo conectado'
-        : 'Nenhum dispositivo conectado';
-
-      $('#emptyState').classList.toggle('hidden', connected);
-
-      ['recordBtn', 'shotBtn', 'pipBtn', 'fullBtn'].forEach(id => {
-        $('#' + id).disabled = !connected;
-      });
-    }
-
-    function formatTime(seconds) {
-      const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
-      const m = String(Math.floor(seconds % 3600 / 60)).padStart(2, '0');
-      const s = String(Math.floor(seconds % 60)).padStart(2, '0');
-
-      return `\({h}:\){m}:${s}`;
-    }
-
-    function updateOverlay() {
-      let left = 'USB CAMERA';
-
-      if ($('#timestamp').checked) {
-        left += ' · ' + new Date().toLocaleString('pt-BR');
-      }
-
-      $('#overlayLeft').textContent = left;
-
-      let info = '';
-
-      if ($('#gpsOverlay').checked) {
-        info = `\({\)('#gpsText').value || 'GPS indisponível'} · \({\)('#speed').value || 0} km/h`;
-      }
-
-      $('#overlayInfo').textContent = info;
-    }
-
-    function applyImageFilters() {
-      const brightness = Number($('#brightnessRange')?.value || 100);
-      const contrast = Number($('#contrastRange')?.value || 100);
-      const saturation = Number($('#saturationRange')?.value || 100);
-      const sharpness = Number($('#sharpnessRange')?.value || 0);
-      const whiteBalance = Number($('#whiteBalanceRange')?.value || 50);
-      const exposure = Number($('#exposureRange')?.value || 100);
-      const antiAliasing = $('#antiAliasing')?.checked;
-      const aaBlur = antiAliasing
-        ? Number($('#antiAliasingLevel')?.value || 0.5)
-        : 0;
-
-      const warmth = Math.abs(whiteBalance - 50) * .28;
-      const hue = (whiteBalance - 50) * .72;
-      const enhancedContrast = contrast + sharpness * .18;
-      const finalBrightness = brightness * exposure / 100;
-
-      video.style.filter =
-        `brightness(${finalBrightness}%) ` +
-        `contrast(${enhancedContrast}%) ` +
-        `saturate(${saturation}%) ` +
-        `sepia(${warmth}%) ` +
-        `hue-rotate(${hue}deg) ` +
-        `blur(${aaBlur}px)`;
-
-      if ($('#brightnessValue')) {
-        $('#brightnessValue').textContent = brightness + '%';
-      }
-
-      if ($('#contrastValue')) {
-        $('#contrastValue').textContent = contrast + '%';
-      }
-
-      if ($('#saturationValue')) {
-        $('#saturationValue').textContent = saturation + '%';
-      }
-
-      if ($('#sharpnessValue')) {
-        $('#sharpnessValue').textContent = sharpness + '%';
-      }
-
-      if ($('#whiteBalanceValue')) {
-        $('#whiteBalanceValue').textContent = whiteBalance + '%';
-      }
-
-      if ($('#exposureValue')) {
-        $('#exposureValue').textContent = exposure + '%';
-      }
-    }
-
-    function showError(message) {
-      toast(message);
-    }
+    function toast(message) { const el = $('#toast'); el.textContent = message; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), 3600); }
+    function setConnected(connected) { \(('#statusDot').classList.toggle('ok', connected); \)('#statusText').textContent = connected ? 'Dispositivo conectado' : 'Nenhum dispositivo conectado'; \(('#emptyState').classList.toggle('hidden', connected); ['recordBtn','shotBtn','pipBtn','fullBtn'].forEach(id => \)('#' + id).disabled = !connected); }
+    function formatTime(seconds) { const h = String(Math.floor(seconds/3600)).padStart(2,'0'), m=String(Math.floor(seconds%3600/60)).padStart(2,'0'), s=String(Math.floor(seconds%60)).padStart(2,'0'); return `\({h}:\){m}:${s}`; }
+    function updateOverlay() { let left = 'USB CAMERA'; if (\(('#timestamp').checked) left += ' · ' + new Date().toLocaleString('pt-BR'); \)('#overlayLeft').textContent = left; let info = ''; if (\(('#gpsOverlay').checked) info = `\){\(('#gpsText').value || 'GPS indisponível'} · \){\(('#speed').value || 0} km/h`; \)('#overlayInfo').textContent = info; }
+    function applyImageFilters() { const brightness = Number(\(('#brightnessRange')?.value || 100), contrast = Number(\)('#contrastRange')?.value || 100), saturation = Number(\(('#saturationRange')?.value || 100), sharpness = Number(\)('#sharpnessRange')?.value || 0), whiteBalance = Number(\(('#whiteBalanceRange')?.value || 50), exposure = Number(\)('#exposureRange')?.value || 100), antiAliasing = \(('#antiAliasing')?.checked, aaBlur = antiAliasing ? Number(\)('#antiAliasingLevel')?.value || 0.5) : 0; const warmth = Math.abs(whiteBalance - 50) * .28, hue = (whiteBalance - 50) * .72, enhancedContrast = contrast + sharpness * .18, finalBrightness = brightness * exposure / 100; video.style.filter = `brightness(\({finalBrightness}%) contrast(\){enhancedContrast}%) saturate(\({saturation}%) sepia(\){warmth}%) hue-rotate(\({hue}deg) blur(\){aaBlur}px)`; if (\(('#brightnessValue')) \)('#brightnessValue').textContent = brightness + '%'; if (\(('#contrastValue')) \)('#contrastValue').textContent = contrast + '%'; if (\(('#saturationValue')) \)('#saturationValue').textContent = saturation + '%'; if (\(('#sharpnessValue')) \)('#sharpnessValue').textContent = sharpness + '%'; if (\(('#whiteBalanceValue')) \)('#whiteBalanceValue').textContent = whiteBalance + '%'; if (\(('#exposureValue')) \)('#exposureValue').textContent = exposure + '%'; }
+    function showError(message) { toast(message); }
 
     async function listDevices() {
-      if (!navigator.mediaDevices?.enumerateDevices) {
-        return;
-      }
-
+      if (!navigator.mediaDevices?.enumerateDevices) return;
       try {
         const devices = await navigator.mediaDevices.enumerateDevices();
-        const cameras = devices.filter(d => d.kind === 'videoinput');
-        const select = $('#deviceSelect');
-
-        select.innerHTML = cameras.length
-          ? ''
-          : '<option value="">Nenhuma câmera encontrada</option>';
-
-        cameras.forEach((d, i) => {
-          const o = document.createElement('option');
-
-          o.value = d.deviceId;
-          o.textContent = d.label || `Câmera USB ${i + 1}`;
-
-          select.appendChild(o);
-        });
-      } catch (e) {
-        showError('Não foi possível listar os dispositivos.');
-      }
+        const cameras = devices.filter(d => d.kind === 'videoinput'); const select = $('#deviceSelect');
+        select.innerHTML = cameras.length ? '' : '<option value="">Nenhuma câmera encontrada</option>';
+        cameras.forEach((d,i) => { const o = document.createElement('option'); o.value = d.deviceId; o.textContent = d.label || `Câmera USB ${i+1}`; select.appendChild(o); });
+      } catch(e) { showError('Não foi possível listar os dispositivos.'); }
     }
-
     async function applyVideoSettings() {
-      if (!stream) {
-        toast('As configurações serão aplicadas ao conectar.');
-        return;
-      }
-
-      const [w, h] = $('#resolution').value.split('x').map(Number);
-      const fps = Number($('#frameRate').value || 30);
-      const track = stream.getVideoTracks()[0];
-
+      if (!stream) { toast('As configurações serão aplicadas ao conectar.'); return; }
+      const [w,h] = \(('#resolution').value.split('x').map(Number); const fps = Number(\)('#frameRate').value || 30); const track = stream.getVideoTracks()[0];
       try {
-        if (track.applyConstraints) {
-          await track.applyConstraints({
-            width: {
-              ideal: w
-            },
-            height: {
-              ideal: h
-            },
-            frameRate: {
-              ideal: fps,
-              max: fps
-            }
-          });
-        }
-
-        const settings = track.getSettings();
-
-        $('#overlayInfo').textContent =
-          `\({settings.width || w}×\){settings.height || h} · ` +
-          `${settings.frameRate ? Math.round(settings.frameRate) : fps} FPS`;
-
-        toast('Qualidade aplicada em tempo real.');
-      } catch (e) {
-        toast('O dispositivo não aceitou a alteração ao vivo; reconectando.');
-        await connect($('#deviceSelect').value);
-      }
+        if (track.applyConstraints) await track.applyConstraints({width:{ideal:w}, height:{ideal:h}, frameRate:{ideal:fps, max:fps}});
+        const settings = track.getSettings(); \(('#overlayInfo').textContent = `\){settings.width || w}×\({settings.height || h} · \){settings.frameRate ? Math.round(settings.frameRate) : fps} FPS`; toast('Qualidade aplicada em tempo real.');
+      } catch(e) { toast('O dispositivo não aceitou a alteração ao vivo; reconectando.'); await connect($('#deviceSelect').value); }
     }
-
     async function connect(deviceId) {
-      if (!navigator.mediaDevices?.getUserMedia) {
-        showError(
-          'Este navegador não oferece acesso à câmera. Abra em HTTPS ou localhost.'
-        );
-        return;
-      }
-
-      if (stream) {
-        stream.getTracks().forEach(t => t.stop());
-      }
-
-      const [w, h] = $('#resolution').value.split('x').map(Number);
-
+      if (!navigator.mediaDevices?.getUserMedia) { showError('Este navegador não oferece acesso à câmera. Abra em HTTPS ou localhost.'); return; }
+      if (stream) stream.getTracks().forEach(t => t.stop());
+      const [w,h] = $('#resolution').value.split('x').map(Number);
       try {
         const fps = Number($('#frameRate')?.value || 30);
-
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            deviceId: deviceId
-              ? {
-                  exact: deviceId
-                }
-              : undefined,
-            width: {
-              ideal: w
-            },
-            height: {
-              ideal: h
-            },
-            frameRate: {
-              ideal: fps,
-              max: fps
-            }
-          },
-          audio: $('#audioDefault')
-            ? $('#audioDefault').checked
-            : true
-        });
-
-        video.srcObject = stream;
-
-        setConnected(true);
-        await listDevices();
-
-        const active = stream.getVideoTracks()[0];
-        const settings = active.getSettings();
-
-        $('#overlayInfo').textContent =
-          `\({settings.width || w}×\){settings.height || h} · ` +
-          `${settings.frameRate ? Math.round(settings.frameRate) : fps} FPS`;
-
-        toast('Dispositivo conectado com sucesso.');
-      } catch (e) {
-        setConnected(false);
-
-        showError(
-          'Não foi possível acessar a câmera. Verifique a permissão, o cabo OTG e a alimentação.'
-        );
-      }
+        stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: deviceId ? {exact:deviceId} : undefined, width:{ideal:w}, height:{ideal:h}, frameRate:{ideal:fps, max:fps} }, audio: \(('#audioDefault') ? \)('#audioDefault').checked : true });
+        video.srcObject = stream; setConnected(true); await listDevices();
+        const active = stream.getVideoTracks()[0]; const settings = active.getSettings(); \(('#overlayInfo').textContent = `\){settings.width || w}×\({settings.height || h} · \){settings.frameRate ? Math.round(settings.frameRate) : fps} FPS`; toast('Dispositivo conectado com sucesso.');
+      } catch(e) { setConnected(false); showError('Não foi possível acessar a câmera. Verifique a permissão, o cabo OTG e a alimentação.'); }
     }
-
-    $('#connectBtn').onclick = () => {
-      connect($('#deviceSelect').value);
-    };
-
+    \(('#connectBtn').onclick = () => connect(\)('#deviceSelect').value);
     $('#refreshBtn').onclick = listDevices;
-
-    $('#deviceSelect').onchange = () => {
-      if (stream) {
-        connect($('#deviceSelect').value);
-      }
-    };
-
+    \(('#deviceSelect').onchange = () => { if (stream) connect(\)('#deviceSelect').value); };
     $('#resolution').onchange = applyVideoSettings;
     $('#frameRate').onchange = applyVideoSettings;
 
-    function startTimer() {
-      startedAt = Date.now();
-
-      clearInterval(timerInterval);
-
-      timerInterval = setInterval(() => {
-        $('#timer').textContent =
-          formatTime((Date.now() - startedAt) / 1000);
-      }, 500);
-    }
-
-    function stopTimer() {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
-
+    function startTimer() { startedAt = Date.now(); clearInterval(timerInterval); timerInterval = setInterval(() => $('#timer').textContent = formatTime((Date.now()-startedAt)/1000), 500); }
+    function stopTimer() { clearInterval(timerInterval); timerInterval = null; }
     function beginRecording() {
-      if (!stream) {
-        return showError('Conecte uma câmera antes de gravar.');
-      }
-
-      if (recorder?.state === 'recording') {
-        return;
-      }
-
-      const requestedFormat = $('#format')?.value || 'webm';
-      const quality = Number($('#quality')?.value || 5000000);
-
-      const mp4Types = [
-        'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
-        'video/mp4'
-      ];
-
-      const webmTypes = [
-        'video/webm;codecs=vp9,opus',
-        'video/webm;codecs=vp8,opus',
-        'video/webm'
-      ];
-
-      const candidates = requestedFormat === 'mp4'
-        ? mp4Types.concat(webmTypes)
-        : webmTypes;
-
-      const mime = candidates.find(x => MediaRecorder.isTypeSupported(x)) || '';
-
-      if (
-        requestedFormat === 'mp4' &&
-        mime &&
-        !mime.startsWith('video/mp4')
-      ) {
-        toast('MP4 não é suportado neste aparelho; usando WebM compatível.');
-      }
-
-      try {
-        recorder = new MediaRecorder(
-          stream,
-          mime
-            ? {
-                mimeType: mime,
-                videoBitsPerSecond: quality,
-                audioBitsPerSecond: 128000
-              }
-            : {
-                videoBitsPerSecond: quality,
-                audioBitsPerSecond: 128000
-              }
-        );
-      } catch (e) {
-        return showError(
-          'Este navegador não suporta gravação neste formato.'
-        );
-      }
-
-      chunks = [];
-
-      recorder.ondataavailable = e => {
-        if (e.data.size) {
-          chunks.push(e.data);
-        }
-      };
-
-      recorder.onstop = () => {
-        lastMime = recorder.mimeType || 'video/webm';
-        lastExtension = lastMime.startsWith('video/mp4')
-          ? 'mp4'
-          : 'webm';
-
-        lastBlob = new Blob(chunks, {
-          type: lastMime
-        });
-
-        const mb = (lastBlob.size / 1048576).toFixed(1);
-
-        $('#lastFile').textContent =
-          `Gravação pronta · \({lastExtension.toUpperCase()} · \){mb} MB`;
-
-        $('#downloadBtn').disabled = false;
-        $('#downloadBtn2').disabled = false;
-
-        toast('Gravação finalizada e pronta para baixar.');
-      };
-
-      recorder.start(1000);
-
-      $('#recordBtn').textContent = '■ Parar gravação';
-      $('#recordBtn').classList.add('danger');
-      $('#metricState').textContent = 'Gravando';
-      $('#recordIndicator').textContent = '● REC';
-
-      startTimer();
+      if (!stream) return showError('Conecte uma câmera antes de gravar.');
+      if (recorder?.state === 'recording') return;
+      const requestedFormat = \(('#format')?.value || 'webm'; const quality = Number(\)('#quality')?.value || 5000000);
+      const mp4Types = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4']; const webmTypes = ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];
+      const candidates = requestedFormat === 'mp4' ? mp4Types.concat(webmTypes) : webmTypes; const mime = candidates.find(x => MediaRecorder.isTypeSupported(x)) || '';
+      if (requestedFormat === 'mp4' && mime && !mime.startsWith('video/mp4')) toast('MP4 não é suportado neste aparelho; usando WebM compatível.');
+      try { recorder = new MediaRecorder(stream, mime ? {mimeType:mime, videoBitsPerSecond:quality, audioBitsPerSecond:128000} : {videoBitsPerSecond:quality, audioBitsPerSecond:128000}); } catch(e) { return showError('Este navegador não suporta gravação neste formato.'); }
+      chunks = []; recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+      recorder.onstop = () => { lastMime = recorder.mimeType || 'video/webm'; lastExtension = lastMime.startsWith('video/mp4') ? 'mp4' : 'webm'; lastBlob = new Blob(chunks, {type:lastMime}); const mb = (lastBlob.size/1048576).toFixed(1); \(('#lastFile').textContent = `Gravação pronta · \){lastExtension.toUpperCase()} · \({mb} MB`; \)('#downloadBtn').disabled = false; $('#downloadBtn2').disabled = false; toast('Gravação finalizada e pronta para baixar.'); };
+      recorder.start(1000); \(('#recordBtn').textContent = '■ Parar gravação'; \)('#recordBtn').classList.add('danger'); \(('#metricState').textContent = 'Gravando'; \)('#recordIndicator').textContent = '● REC'; startTimer();
     }
-
-    function finishRecording() {
-      if (!recorder || recorder.state === 'inactive') {
-        return;
-      }
-
-      recorder.stop();
-
-      $('#recordBtn').textContent = '● Iniciar gravação';
-      $('#recordBtn').classList.remove('danger');
-      $('#metricState').textContent = 'Parado';
-      $('#recordIndicator').textContent = '';
-
-      stopTimer();
-    }
-
-    $('#recordBtn').onclick = () => {
-      recorder?.state === 'recording'
-        ? finishRecording()
-        : beginRecording();
-    };
-
-    $('#recordFromPage').onclick = () => {
-      document.querySelector('[data-section="dashboard"]').click();
-      beginRecording();
-    };
-
-    function localDateFolder() {
-      const d = new Date();
-
-      return d.getFullYear() +
-        '-' +
-        String(d.getMonth() + 1).padStart(2, '0') +
-        '-' +
-        String(d.getDate()).padStart(2, '0');
-    }
-
-    function updateFolderStatus() {
-      const androidFolder = !!(
-        window.Android &&
-        Android.hasSaveFolder &&
-        Android.hasSaveFolder()
-      );
-
-      const enabled = androidFolder || !!browserDirectory;
-
-      if ($('#folderStatus')) {
-        $('#folderStatus').textContent = enabled
-          ? (
-              $('#dateFolders').checked
-                ? 'Pasta autorizada: novas gravações serão organizadas por data.'
-                : 'Pasta autorizada: novas gravações serão salvas nela.'
-            )
-          : 'As gravações serão baixadas pelo navegador.';
-      }
-    }
-
-    async function blobBytes(blob) {
-      if (blob.arrayBuffer) {
-        return new Uint8Array(await blob.arrayBuffer());
-      }
-
-      return new Uint8Array(
-        await new Promise(resolve => {
-          const reader = new FileReader();
-
-          reader.onload = () => resolve(reader.result);
-          reader.readAsArrayBuffer(blob);
-        })
-      );
-    }
-
-    async function saveInBrowserFolder(filename) {
-      if (!browserDirectory) {
-        return false;
-      }
-
-      try {
-        const target = $('#dateFolders').checked
-          ? await browserDirectory.getDirectoryHandle(
-              localDateFolder(),
-              {
-                create: true
-              }
-            )
-          : browserDirectory;
-
-        const file = await target.getFileHandle(filename, {
-          create: true
-        });
-
-        const writable = await file.createWritable();
-
-        await writable.write(lastBlob);
-        await writable.close();
-
-        return true;
-      } catch (e) {
-        return false;
-      }
-    }
-
-    async function saveLastToFolder(filename) {
-      if (!window.Android && browserDirectory) {
-        return saveInBrowserFolder(filename);
-      }
-
-      const bridge = window.Android;
-
-      if (!bridge) {
-        return false;
-      }
-
-      const starter =
-        $('#dateFolders').checked && bridge.startFileInDateFolder
-          ? bridge.startFileInDateFolder
-          : bridge.startFile;
-
-      if (
-        !starter ||
-        !bridge.appendFileChunk ||
-        !bridge.finishFile ||
-        !starter(filename)
-      ) {
-        return false;
-      }
-
-      try {
-        const bytes = await blobBytes(lastBlob);
-        const size = 480000;
-
-        for (let offset = 0; offset < bytes.length; offset += size) {
-          let binary = '';
-          const end = Math.min(offset + size, bytes.length);
-
-          for (let i = offset; i < end; i++) {
-            binary += String.fromCharCode(bytes[i]);
-          }
-
-          if (!bridge.appendFileChunk(btoa(binary))) {
-            throw new Error('chunk');
-          }
-        }
-
-        return bridge.finishFile();
-      } catch (e) {
-        if (bridge.cancelFile) {
-          bridge.cancelFile();
-        }
-
-        return false;
-      }
-    }
-
-    async function downloadLast() {
-      if (!lastBlob) {
-        return;
-      }
-
-      const filename =
-        ($('#filename').value || 'usb-camera-gravacao') +
-        '.' +
-        lastExtension;
-
-      const androidFolder = !!(
-        window.Android &&
-        Android.hasSaveFolder &&
-        Android.hasSaveFolder()
-      );
-
-      if (androidFolder || browserDirectory) {
-        if (await saveLastToFolder(filename)) {
-          toast('Gravação salva na pasta escolhida.');
-          return;
-        }
-
-        toast(
-          'Não foi possível salvar na pasta; iniciando o download normal.'
-        );
-      }
-
-      const a = document.createElement('a');
-
-      a.href = URL.createObjectURL(lastBlob);
-      a.download = filename;
-      a.click();
-
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    }
-
-    $('#downloadBtn').onclick = downloadLast;
-    $('#downloadBtn2').onclick = downloadLast;
-
-    $('#shotBtn').onclick = () => {
-      if (!stream) {
-        return;
-      }
-
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-
-      ctx.drawImage(video, 0, 0);
-
-      const a = document.createElement('a');
-
-      a.href = canvas.toDataURL('image/png');
-      a.download = 'usb-camera-foto.png';
-      a.click();
-
-      toast('Foto capturada.');
-    };
-
-    $('#pipBtn').onclick = async () => {
-      try {
-        await video.requestPictureInPicture();
-      } catch (e) {
-        showError(
-          'Picture-in-Picture não está disponível neste navegador.'
-        );
-      }
-    };
-
-    $('#fullBtn').onclick = () => {
-      video.requestFullscreen?.();
-    };
-
-    $('#mirror').onchange = e => {
-      video.style.transform = e.target.checked
-        ? 'scaleX(-1)'
-        : '';
-    };
-
-    ['timestamp', 'gpsOverlay', 'speed'].forEach(id => {
-      $('#' + id).addEventListener('input', updateOverlay);
-    });
-
-    $('#gpsBtn').onclick = () => {
-      if (!navigator.geolocation) {
-        return showError(
-          'Este navegador não oferece localização.'
-        );
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          const {
-            latitude,
-            longitude,
-            speed
-          } = pos.coords;
-
-          $('#gpsText').value =
-            `\({latitude.toFixed(5)}, \){longitude.toFixed(5)}`;
-
-          if (speed != null) {
-            $('#speed').value =
-              Math.max(0, (speed * 3.6).toFixed(1));
-          }
-
-          updateOverlay();
-          toast('Localização obtida.');
-        },
-        () => {
-          showError(
-            'Permita o acesso à localização para usar o GPS.'
-          );
-        }
-      );
-    };
-
-    function motionCheck() {
-      if (!stream || video.readyState < 2) {
-        return;
-      }
-
-      canvas.width = 160;
-      canvas.height = 90;
-
-      ctx.drawImage(video, 0, 0, 160, 90);
-
-      const data = ctx.getImageData(0, 0, 160, 90).data;
-
-      if (previousFrame) {
-        let changed = 0;
-
-        for (let i = 0; i < data.length; i += 16) {
-          changed +=
-            Math.abs(data[i] - previousFrame[i]) +
-            Math.abs(data[i + 1] - previousFrame[i + 1]) +
-            Math.abs(data[i + 2] - previousFrame[i + 2]);
-        }
-
-        const movement = changed / (data.length / 16);
-
-        if (
-          movement > 28 &&
-          recorder?.state !== 'recording'
-        ) {
-          beginRecording();
-        }
-      }
-
-      previousFrame = data;
-    }
-
-    $('#motion').onchange = e => {
-      $('#motionState').textContent = e.target.checked
-        ? 'Ativa'
-        : 'Desligada';
-
-      clearInterval(motionTimer);
-
-      if (e.target.checked) {
-        motionTimer = setInterval(motionCheck, 700);
-      }
-    };
-
-    document.querySelectorAll('nav button').forEach(btn => {
-      btn.onclick = () => {
-        document.querySelectorAll('nav button').forEach(b => {
-          b.classList.remove('active');
-        });
-
-        btn.classList.add('active');
-
-        document.querySelectorAll('.section').forEach(s => {
-          s.classList.remove('active');
-        });
-
-        $('#' + btn.dataset.section).classList.add('active');
-      };
-    });
-
-    $('#heroConnectBtn').onclick = () => {
-      connect($('#deviceSelect').value);
-    };
-
-    document.querySelectorAll('[data-section-jump]').forEach(btn => {
-      btn.onclick = () => {
-        document
-          .querySelector('[data-section="' + btn.dataset.sectionJump + '"]')
-          .click();
-      };
-    });
-
-    function settingGet(key, fallback) {
-      try {
-        const value = localStorage.getItem(key);
-
-        return value === null
-          ? fallback
-          : JSON.parse(value);
-      } catch (e) {
-        return fallback;
-      }
-    }
-
-    function settingSet(key, value) {
-      try {
-        localStorage.setItem(key, JSON.stringify(value));
-      } catch (e) {}
-    }
-
-    function applyTheme(theme) {
-      const chosen =
-        theme === 'system'
-          ? (
-              window.matchMedia &&
-              matchMedia('(prefers-color-scheme:light)').matches
-                ? 'light'
-                : 'dark'
-            )
-          : theme;
-
-      document.body.classList.toggle(
-        'light',
-        chosen === 'light'
-      );
-    }
-
+    function finishRecording() { if (!recorder || recorder.state === 'inactive') return; recorder.stop(); \(('#recordBtn').textContent = '● Iniciar gravação'; \)('#recordBtn').classList.remove('danger'); \(('#metricState').textContent = 'Parado'; \)('#recordIndicator').textContent = ''; stopTimer(); }
+    $('#recordBtn').onclick = () => recorder?.state === 'recording' ? finishRecording() : beginRecording();
+    $('#recordFromPage').onclick = () => { document.querySelector('[data-section="dashboard"]').click(); beginRecording(); };
+    function localDateFolder() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+    function updateFolderStatus() { const androidFolder = !!(window.Android && Android.hasSaveFolder && Android.hasSaveFolder()); const enabled = androidFolder || !!browserDirectory; if (\(('#folderStatus')) \)('#folderStatus').textContent = enabled ? ($('#dateFolders').checked ? 'Pasta autorizada: novas gravações serão organizadas por data.' : 'Pasta autorizada: novas gravações serão salvas nela.') : 'As gravações serão baixadas pelo navegador.'; }
+    async function blobBytes(blob) { if (blob.arrayBuffer) return new Uint8Array(await blob.arrayBuffer()); return new Uint8Array(await new Promise(resolve => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.readAsArrayBuffer(blob); })); }
+    async function saveInBrowserFolder(filename) { if (!browserDirectory) return false; try { const target = $('#dateFolders').checked ? await browserDirectory.getDirectoryHandle(localDateFolder(), {create:true}) : browserDirectory; const file = await target.getFileHandle(filename, {create:true}); const writable = await file.createWritable(); await writable.write(lastBlob); await writable.close(); return true; } catch(e) { return false; } }
+    async function saveLastToFolder(filename) { if (!window.Android && browserDirectory) return saveInBrowserFolder(filename); const bridge = window.Android; if (!bridge) return false; const starter = $('#dateFolders').checked && bridge.startFileInDateFolder ? bridge.startFileInDateFolder : bridge.startFile; if (!starter || !bridge.appendFileChunk || !bridge.finishFile || !starter(filename)) return false; try { const bytes = await blobBytes(lastBlob); const size = 480000; for (let offset = 0; offset < bytes.length; offset += size) { let binary = ''; const end = Math.min(offset + size, bytes.length); for (let i = offset; i < end; i++) binary += String.fromCharCode(bytes[i]); if (!bridge.appendFileChunk(btoa(binary))) throw new Error('chunk'); } return bridge.finishFile(); } catch(e) { if (bridge.cancelFile) bridge.cancelFile(); return false; } }
+    async function downloadLast() { if (!lastBlob) return; const filename = ($('#filename').value || 'usb-camera-gravacao') + '.' + lastExtension; const androidFolder = !!(window.Android && Android.hasSaveFolder && Android.hasSaveFolder()); if (androidFolder || browserDirectory) { if (await saveLastToFolder(filename)) { toast('Gravação salva na pasta escolhida.'); return; } toast('Não foi possível salvar na pasta; iniciando o download normal.'); } const a = document.createElement('a'); a.href = URL.createObjectURL(lastBlob); a.download = filename; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
+    \(('#downloadBtn').onclick = downloadLast; \)('#downloadBtn2').onclick = downloadLast;
+    $('#shotBtn').onclick = () => { if (!stream) return; canvas.width=video.videoWidth; canvas.height=video.videoHeight; ctx.drawImage(video,0,0); const a=document.createElement('a'); a.href=canvas.toDataURL('image/png'); a.download='usb-camera-foto.png'; a.click(); toast('Foto capturada.'); };
+    $('#pipBtn').onclick = async () => { try { await video.requestPictureInPicture(); } catch(e) { showError('Picture-in-Picture não está disponível neste navegador.'); } };
+    $('#fullBtn').onclick = () => video.requestFullscreen?.();
+    $('#mirror').onchange = e => video.style.transform = e.target.checked ? 'scaleX(-1)' : '';
+    ['timestamp','gpsOverlay','speed'].forEach(id => $('#'+id).addEventListener('input', updateOverlay));
+
+    \(('#gpsBtn').onclick = () => { if (!navigator.geolocation) return showError('Este navegador não oferece localização.'); navigator.geolocation.getCurrentPosition(pos => { const {latitude,longitude,speed}=pos.coords; \)('#gpsText').value = `\({latitude.toFixed(5)}, \){longitude.toFixed(5)}`; if (speed != null) $('#speed').value = Math.max(0,(speed*3.6).toFixed(1)); updateOverlay(); toast('Localização obtida.'); }, () => showError('Permita o acesso à localização para usar o GPS.')); };
+
+    function motionCheck() { if (!stream || video.readyState < 2) return; canvas.width=160; canvas.height=90; ctx.drawImage(video,0,0,160,90); const data=ctx.getImageData(0,0,160,90).data; if (previousFrame) { let changed=0; for(let i=0;i<data.length;i+=16) changed += Math.abs(data[i]-previousFrame[i]) + Math.abs(data[i+1]-previousFrame[i+1]) + Math.abs(data[i+2]-previousFrame[i+2]); const movement=changed/(data.length/16); if(movement>28 && recorder?.state!=='recording') beginRecording(); } previousFrame=data; }
+    \(('#motion').onchange = e => { \)('#motionState').textContent = e.target.checked ? 'Ativa' : 'Desligada'; clearInterval(motionTimer); if(e.target.checked) motionTimer=setInterval(motionCheck,700); };
+
+    document.querySelectorAll('nav button').forEach(btn => btn.onclick = () => { document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); document.querySelectorAll('.section').forEach(s=>s.classList.remove('active')); $('#'+btn.dataset.section).classList.add('active'); });
+    \(('#heroConnectBtn').onclick = () => connect(\)('#deviceSelect').value);
+    document.querySelectorAll('[data-section-jump]').forEach(btn => btn.onclick = () => document.querySelector('[data-section="'+btn.dataset.sectionJump+'"]').click());
+
+    function settingGet(key, fallback) { try { const value = localStorage.getItem(key); return value === null ? fallback : JSON.parse(value); } catch(e) { return fallback; } }
+    function settingSet(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch(e) {} }
+    function applyTheme(theme) { const chosen = theme === 'system' ? (window.matchMedia && matchMedia('(prefers-color-scheme:light)').matches ? 'light' : 'dark') : theme; document.body.classList.toggle('light', chosen === 'light'); }
     function loadSettings() {
-      const theme = settingGet('usbCameraTheme', 'dark');
-
-      $('#themeSelect').value = theme;
-      applyTheme(theme);
-
-      $('#splashToggle').checked =
-        settingGet('usbCameraSplash', true);
-
-      $('#reduceMotion').checked =
-        settingGet('usbCameraReduceMotion', false);
-
-      $('#timestampDefault').checked =
-        settingGet('usbCameraTimestamp', true);
-
-      $('#audioDefault').checked =
-        settingGet('usbCameraAudio', true);
-
-      $('#motionDefault').checked =
-        settingGet('usbCameraMotion', false);
-
-      $('#resolutionDefault').value =
-        settingGet('usbCameraResolution', '1920x1080');
-
-      $('#frameRateDefault').value =
-        settingGet('usbCameraFrameRate', '30');
-
-      $('#formatDefault').value =
-        settingGet('usbCameraFormat', 'webm');
-
-      $('#qualityDefault').value =
-        settingGet('usbCameraQuality', '5000000');
-
-      $('#dateFolders').checked =
-        settingGet('usbCameraDateFolders', false);
-
-      $('#brightnessRange').value =
-        settingGet('usbCameraBrightness', 100);
-
-      $('#contrastRange').value =
-        settingGet('usbCameraContrast', 100);
-
-      $('#saturationRange').value =
-        settingGet('usbCameraSaturation', 100);
-
-      $('#sharpnessRange').value =
-        settingGet('usbCameraSharpness', 0);
-
-      $('#whiteBalanceRange').value =
-        settingGet('usbCameraWhiteBalance', 50);
-
-      $('#exposureRange').value =
-        settingGet('usbCameraExposure', 100);
-
-      $('#antiAliasing').checked =
-        settingGet('usbCameraAntiAliasing', false);
-
-      $('#antiAliasingLevel').value =
-        settingGet('usbCameraAaLevel', '0.5');
-
-      applyImageFilters();
-
-      $('#timestamp').checked =
-        $('#timestampDefault').checked;
-
-      $('#resolution').value =
-        $('#resolutionDefault').value;
-
-      $('#frameRate').value =
-        $('#frameRateDefault').value;
-
-      $('#format').value =
-        $('#formatDefault').value;
-
-      $('#quality').value =
-        $('#qualityDefault').value;
-
-      $('#motion').checked =
-        $('#motionDefault').checked;
-
-      $('#motion').dispatchEvent(new Event('change'));
-
-      if ($('#reduceMotion').checked) {
-        document.body.classList.add('reduce-motion');
-      }
-
-      if ($('#splashToggle').checked) {
-        window.setTimeout(() => {
-          $('#splashScreen').classList.add('hide');
-        }, 1250);
-      } else {
-        $('#splashScreen').classList.add('hide');
-      }
+      const theme = settingGet('usbCameraTheme','dark'); $('#themeSelect').value = theme; applyTheme(theme);
+      \(('#splashToggle').checked = settingGet('usbCameraSplash',true); \)('#reduceMotion').checked = settingGet('usbCameraReduceMotion',false);
+      \(('#timestampDefault').checked = settingGet('usbCameraTimestamp',true); \)('#audioDefault').checked = settingGet('usbCameraAudio',true); \(('#motionDefault').checked = settingGet('usbCameraMotion',false); \)('#resolutionDefault').value = settingGet('usbCameraResolution','1920x1080'); \(('#frameRateDefault').value = settingGet('usbCameraFrameRate','30'); \)('#formatDefault').value = settingGet('usbCameraFormat','webm'); \(('#qualityDefault').value = settingGet('usbCameraQuality','5000000'); \)('#dateFolders').checked = settingGet('usbCameraDateFolders',false);
+      \(('#brightnessRange').value = settingGet('usbCameraBrightness',100); \)('#contrastRange').value = settingGet('usbCameraContrast',100); \(('#saturationRange').value = settingGet('usbCameraSaturation',100); \)('#sharpnessRange').value = settingGet('usbCameraSharpness',0); \(('#whiteBalanceRange').value = settingGet('usbCameraWhiteBalance',50); \)('#exposureRange').value = settingGet('usbCameraExposure',100); \(('#antiAliasing').checked = settingGet('usbCameraAntiAliasing',false); \)('#antiAliasingLevel').value = settingGet('usbCameraAaLevel','0.5'); applyImageFilters();
+      \(('#timestamp').checked = \)('#timestampDefault').checked; \(('#resolution').value = \)('#resolutionDefault').value; \(('#frameRate').value = \)('#frameRateDefault').value; \(('#format').value = \)('#formatDefault').value; \(('#quality').value = \)('#qualityDefault').value; \(('#motion').checked = \)('#motionDefault').checked; $('#motion').dispatchEvent(new Event('change'));
+      if ($('#reduceMotion').checked) document.body.classList.add('reduce-motion');
+      if (\(('#splashToggle').checked) window.setTimeout(() => \)('#splashScreen').classList.add('hide'), 1250); else $('#splashScreen').classList.add('hide');
     }
-
-    $('#themeSelect').onchange = e => {
-      settingSet('usbCameraTheme', e.target.value);
-      applyTheme(e.target.value);
-    };
-
-    $('#splashToggle').onchange = e => {
-      settingSet('usbCameraSplash', e.target.checked);
-    };
-
-    $('#reduceMotion').onchange = e => {
-      settingSet(
-        'usbCameraReduceMotion',
-        e.target.checked
-      );
-
-      document.body.classList.toggle(
-        'reduce-motion',
-        e.target.checked
-      );
-    };
-
-    $('#timestampDefault').onchange = e => {
-      settingSet(
-        'usbCameraTimestamp',
-        e.target.checked
-      );
-
-      $('#timestamp').checked = e.target.checked;
-      updateOverlay();
-    };
-
-    $('#audioDefault').onchange = e => {
-      settingSet(
-        'usbCameraAudio',
-        e.target.checked
-      );
-    };
-
-    $('#motionDefault').onchange = e => {
-      settingSet(
-        'usbCameraMotion',
-        e.target.checked
-      );
-
-      $('#motion').checked = e.target.checked;
-      $('#motion').dispatchEvent(new Event('change'));
-    };
-
-    $('#resolutionDefault').onchange = e => {
-      settingSet(
-        'usbCameraResolution',
-        e.target.value
-      );
-
-      $('#resolution').value = e.target.value;
-      applyVideoSettings();
-    };
-
-    $('#frameRateDefault').onchange = e => {
-      settingSet(
-        'usbCameraFrameRate',
-        e.target.value
-      );
-
-      $('#frameRate').value = e.target.value;
-      applyVideoSettings();
-    };
-
-    $('#formatDefault').onchange = e => {
-      settingSet(
-        'usbCameraFormat',
-        e.target.value
-      );
-
-      $('#format').value = e.target.value;
-    };
-
-    $('#qualityDefault').onchange = e => {
-      settingSet(
-        'usbCameraQuality',
-        e.target.value
-      );
-
-      $('#quality').value = e.target.value;
-    };
-
-    [
-      'brightness',
-      'contrast',
-      'saturation',
-      'sharpness',
-      'whiteBalance',
-      'exposure'
-    ].forEach(type => {
-      $('#' + type + 'Range').oninput = e => {
-        settingSet(
-          'usbCamera' +
-            type.charAt(0).toUpperCase() +
-            type.slice(1),
-          Number(e.target.value)
-        );
-
-        applyImageFilters();
-      };
-    });
-
-    $('#antiAliasing').onchange = e => {
-      settingSet(
-        'usbCameraAntiAliasing',
-        e.target.checked
-      );
-
-      applyImageFilters();
-    };
-
-    $('#antiAliasingLevel').onchange = e => {
-      settingSet(
-        'usbCameraAaLevel',
-        e.target.value
-      );
-
-      applyImageFilters();
-    };
-
-    $('#resetSettings').onclick = () => {
-      [
-        'usbCameraTheme',
-        'usbCameraSplash',
-        'usbCameraReduceMotion',
-        'usbCameraTimestamp',
-        'usbCameraAudio',
-        'usbCameraMotion',
-        'usbCameraResolution',
-        'usbCameraFrameRate',
-        'usbCameraFormat',
-        'usbCameraDateFolders',
-        'usbCameraQuality',
-        'usbCameraBrightness',
-        'usbCameraContrast',
-        'usbCameraSaturation',
-        'usbCameraSharpness',
-        'usbCameraWhiteBalance',
-        'usbCameraExposure',
-        'usbCameraAntiAliasing',
-        'usbCameraAaLevel'
-      ].forEach(key => {
-        try {
-          localStorage.removeItem(key);
-        } catch (e) {}
-      });
-
-      location.reload();
-    };
-
-    $('#chooseFolder').onclick = async () => {
-      if (window.Android && Android.chooseSaveFolder) {
-        Android.chooseSaveFolder();
-        return;
-      }
-
-      if (window.showDirectoryPicker) {
-        try {
-          browserDirectory = await window.showDirectoryPicker({
-            mode: 'readwrite'
-          });
-
-          updateFolderStatus();
-          toast('Pasta de gravação autorizada no navegador.');
-        } catch (e) {}
-      } else {
-        toast(
-          'Este navegador não oferece escolha de pasta; use o download normal.'
-        );
-      }
-    };
-
-    $('#clearFolder').onclick = () => {
-      if (window.Android && Android.clearSaveFolder) {
-        Android.clearSaveFolder();
-      }
-
-      browserDirectory = null;
-      updateFolderStatus();
-      toast('Pasta escolhida removida.');
-    };
-
-    $('#dateFolders').onchange = e => {
-      settingSet(
-        'usbCameraDateFolders',
-        e.target.checked
-      );
-
-      updateFolderStatus();
-    };
-
-    window.onSaveFolderChosen = selected => {
-      updateFolderStatus();
-
-      if (selected) {
-        toast('Pasta de gravação autorizada.');
-      }
-    };
-
-    loadSettings();
-    updateFolderStatus();
-
-    $('#streamBtn').onclick = () => {
-      if (!$('#server').value) {
-        return showError(
-          'Informe o endereço do servidor antes de continuar.'
-        );
-      }
-
-      toast(
-        'Configuração salva. Um backend de transmissão é necessário para enviar o sinal.'
-      );
-    };
-
+    $('#themeSelect').onchange = e => { settingSet('usbCameraTheme',e.target.value); applyTheme(e.target.value); };
+    $('#splashToggle').onchange = e => settingSet('usbCameraSplash',e.target.checked);
+    $('#reduceMotion').onchange = e => { settingSet('usbCameraReduceMotion',e.target.checked); document.body.classList.toggle('reduce-motion',e.target.checked); };
+    \(('#timestampDefault').onchange = e => { settingSet('usbCameraTimestamp',e.target.checked); \)('#timestamp').checked=e.target.checked; updateOverlay(); };
+    $('#audioDefault').onchange = e => settingSet('usbCameraAudio',e.target.checked);
+    \(('#motionDefault').onchange = e => { settingSet('usbCameraMotion',e.target.checked); \)('#motion').checked=e.target.checked; $('#motion').dispatchEvent(new Event('change')); };
+    \(('#resolutionDefault').onchange = e => { settingSet('usbCameraResolution',e.target.value); \)('#resolution').value=e.target.value; applyVideoSettings(); };
+    \(('#frameRateDefault').onchange = e => { settingSet('usbCameraFrameRate',e.target.value); \)('#frameRate').value=e.target.value; applyVideoSettings(); };
+    \(('#formatDefault').onchange = e => { settingSet('usbCameraFormat',e.target.value); \)('#format').value=e.target.value; };
+    \(('#qualityDefault').onchange = e => { settingSet('usbCameraQuality',e.target.value); \)('#quality').value=e.target.value; };
+    ['brightness','contrast','saturation','sharpness','whiteBalance','exposure'].forEach(type => { $('#'+type+'Range').oninput = e => { settingSet('usbCamera'+type.charAt(0).toUpperCase()+type.slice(1),Number(e.target.value)); applyImageFilters(); }; });
+    $('#antiAliasing').onchange = e => { settingSet('usbCameraAntiAliasing',e.target.checked); applyImageFilters(); };
+    $('#antiAliasingLevel').onchange = e => { settingSet('usbCameraAaLevel',e.target.value); applyImageFilters(); };
+    $('#resetSettings').onclick = () => { ['usbCameraTheme','usbCameraSplash','usbCameraReduceMotion','usbCameraTimestamp','usbCameraAudio','usbCameraMotion','usbCameraResolution','usbCameraFrameRate','usbCameraFormat','usbCameraDateFolders','usbCameraQuality','usbCameraBrightness','usbCameraContrast','usbCameraSaturation','usbCameraSharpness','usbCameraWhiteBalance','usbCameraExposure','usbCameraAntiAliasing','usbCameraAaLevel'].forEach(key => { try { localStorage.removeItem(key); } catch(e) {} }); location.reload(); };
+    $('#chooseFolder').onclick = async () => { if (window.Android && Android.chooseSaveFolder) { Android.chooseSaveFolder(); return; } if (window.showDirectoryPicker) { try { browserDirectory = await window.showDirectoryPicker({mode:'readwrite'}); updateFolderStatus(); toast('Pasta de gravação autorizada no navegador.'); } catch(e) {} } else toast('Este navegador não oferece escolha de pasta; use o download normal.'); };
+    $('#clearFolder').onclick = () => { if (window.Android && Android.clearSaveFolder) Android.clearSaveFolder(); browserDirectory = null; updateFolderStatus(); toast('Pasta escolhida removida.'); };
+    $('#dateFolders').onchange = e => { settingSet('usbCameraDateFolders',e.target.checked); updateFolderStatus(); };
+    window.onSaveFolderChosen = selected => { updateFolderStatus(); if (selected) toast('Pasta de gravação autorizada.'); };
+    loadSettings(); updateFolderStatus();
+    \(('#streamBtn').onclick = () => { if (!\)('#server').value) return showError('Informe o endereço do servidor antes de continuar.'); toast('Configuração salva. Um backend de transmissão é necessário para enviar o sinal.'); };
     updateOverlay();
-
-    if (navigator.mediaDevices?.enumerateDevices) {
-      listDevices();
-    }
+    if (navigator.mediaDevices?.enumerateDevices) listDevices();
   </script>
 </body>
 </html>
